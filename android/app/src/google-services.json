@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "336373374817",
+    "project_id": "lain-dain-33f4e",
+    "storage_bucket": "lain-dain-33f4e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:336373374817:android:f634191e0cdb618aefaf20",
+        "android_client_info": {
+          "package_name": "com.example.lain_dain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "336373374817-com3ub6u05p2scpl88mlqiffl1lanphe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZMCw0TXNJ1ggW83hDCAnGSDs6v-N00D4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "336373374817-com3ub6u05p2scpl88mlqiffl1lanphe.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "336373374817-b1r6j0d4qpctancpci5dc7bpl5lvj3t0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.lainDain"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
