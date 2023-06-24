@@ -1,4 +1,8 @@
+import 'dart:math';
+
 import 'package:lain_dain/buyer-form.dart';
+import 'package:lain_dain/models/pickup_address_model.dart';
+import 'package:lain_dain/seller-form.dart';
 import 'package:lain_dain/widget/button_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -74,6 +78,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final TextEditingController _aadharController = TextEditingController();
   bool _isValid = false;
+  PickupAddress pickupAddress = PickupAddress(id: '', fullName: '', pincode: '', houseNumber: '', city: '', state: '');
 
   @override
   void dispose() {
@@ -247,7 +252,7 @@ class _MainPageState extends State<MainPage> {
                                   text: 'Submit',
                                   onClicked: () {
                                     _validateAadhaarNumber();
-                                    Navigator.pop(context);
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>FormScreen(selectedAddress: pickupAddress)));
                                   })
                             ],
                           ),

@@ -4,14 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:lain_dain/delivery/delivery_details.dart';
 import 'package:lain_dain/models/pickup_address_model.dart';
 import 'package:lain_dain/widget/button_widget.dart';
 import 'order_screen.dart';
 
 class FormScreen extends StatefulWidget {
   final PickupAddress selectedAddress;
+
   //String aadharNumber="";
   const FormScreen({Key? key, required this.selectedAddress}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return FormScreenState();
@@ -36,56 +39,55 @@ class FormScreenState extends State<FormScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    pkupAddressController= TextEditingController(
+    pkupAddressController = TextEditingController(
       text:
-      '${widget.selectedAddress.houseNumber}, ${widget.selectedAddress.city}, ${widget.selectedAddress.pincode},${widget.selectedAddress.state}',
+          '${widget.selectedAddress.houseNumber}, ${widget.selectedAddress.city}, ${widget.selectedAddress.pincode},${widget.selectedAddress.state}',
     );
   }
 
-  void saveSellerDetails() async{
-    final SellerRef = FirebaseFirestore.instance.collection('buyers');
-    String sellerid = SellerRef.id;
+  void saveSellerDetails() async {
+    final SellerRef = FirebaseFirestore.instance.collection('sellers');
+    String sellerid = SellerRef.doc().id;
     await SellerRef.doc(sellerid).set({
       'Seller id': sellerid,
       'Pan card': _pan,
-      'First name' : _firstName,
+      'First name': _firstName,
       'Last name': _lastName,
       'business name': _businessName,
       'pickup address': pkupAddressController.text,
     });
   }
 
-  void determinePosition() async{
+  void determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if(!serviceEnabled){
+    if (!serviceEnabled) {
       return Future.error('Location services are disabled');
     }
     permission = await Geolocator.checkPermission();
-    if(permission == LocationPermission.denied){
+    if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if(permission == LocationPermission.denied){
+      if (permission == LocationPermission.denied) {
         return Future.error("Location permissions are denied!");
       }
     }
-    if(permission == LocationPermission.deniedForever){
-      return Future.error("Location permissions are permanently denied!, we cannot request permission");
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          "Location permissions are permanently denied!, we cannot request permission");
     }
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
 
-    List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude, position.longitude);
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
 
     Placemark placemark = placemarks[0];
     String currentAddress =
         '${placemark.street}, ${placemark.subLocality}, ${placemark.locality},${placemark.postalCode}, ${placemark.administrativeArea}, ${placemark.country}';
 
     pkupAddressController.text = currentAddress;
-
-
-
   }
 
   Widget _buildPan() {
@@ -106,7 +108,7 @@ class FormScreenState extends State<FormScreen> {
       onSaved: (value) {
         _pan = value!;
       },
-      onChanged: (value){
+      onChanged: (value) {
         print('Selected value $value');
         setState(() {
           _pan = value!;
@@ -133,7 +135,7 @@ class FormScreenState extends State<FormScreen> {
       onSaved: (value) {
         _firstName = value!;
       },
-      onChanged: (value){
+      onChanged: (value) {
         print('Selected value $value');
         setState(() {
           _firstName = value!;
@@ -159,7 +161,7 @@ class FormScreenState extends State<FormScreen> {
       onSaved: (value) {
         _lastName = value!;
       },
-      onChanged: (value){
+      onChanged: (value) {
         print('Selected value $value');
         setState(() {
           _lastName = value!;
@@ -185,7 +187,7 @@ class FormScreenState extends State<FormScreen> {
       onSaved: (value) {
         _businessName = value!;
       },
-      onChanged: (value){
+      onChanged: (value) {
         print('Selected value $value');
         setState(() {
           _businessName = value!;
@@ -200,14 +202,7 @@ class FormScreenState extends State<FormScreen> {
       decoration: const InputDecoration(
         labelText: 'PICK-UP ADDRESS',
         icon: Icon(Icons.location_city),
-        iconColor: Color.fromARGB(255, 67, 160, 71),
-        // suffixIcon:InkWell(
-        //   onTap: (){
-        //     //Navigator.push(context, MaterialPageRoute(builder: (context)=>PickupAddressDetails()));
-        //   },
-        //     child: Icon(Icons.location_on, color:Color.fromARGB(255, 67, 160, 71) ,))
-
-      ),
+        iconColor: Color.fromARGB(255, 67, 160, 71),),
       keyboardType: TextInputType.streetAddress,
       validator: (value) {
         if (value!.isEmpty) {
@@ -222,24 +217,58 @@ class FormScreenState extends State<FormScreen> {
     );
   }
 
-  Widget _useMyLocation() {
-    return  Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+  Widget _savedAddresses() {
+    return Row(
+      //mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        const Icon(Icons.my_location, color: Color.fromARGB(255, 67, 160, 71), size: 20,),
-        const SizedBox(width: 3,),
+        const Icon(
+          Icons.location_on,
+          color: Color.fromARGB(255, 67, 160, 71),
+          size: 20,
+        ),
+        const SizedBox(
+          width: 3,
+        ),
         InkWell(
-            onTap: (){
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> DeliveryDetails(savedAddress: PickupAddress(id: '', fullName: '', pincode:'', houseNumber: '', city: '', state: ''))));
+            },
+            child: const Text(
+              "Saved Addresses",
+              style: TextStyle(
+                  fontWeight: FontWeight.normal, color: Colors.black54),
+            ))
+      ],
+    );
+  }
+
+  Widget _useMyLocation() {
+    return Row(
+      //mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        const Icon(
+          Icons.my_location,
+          color: Color.fromARGB(255, 67, 160, 71),
+          size: 20,
+        ),
+        const SizedBox(
+          width: 3,
+        ),
+        InkWell(
+            onTap: () {
               determinePosition();
             },
-            child: const Text("Use my location", style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black54),))
+            child: const Text(
+              "Use my location",
+              style: TextStyle(
+                  fontWeight: FontWeight.normal, color: Colors.black54),
+            ))
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("LainDain"),
@@ -258,8 +287,16 @@ class FormScreenState extends State<FormScreen> {
                 _buildLastName(),
                 _buildBusinessName(),
                 _buildPkupAdd(),
-                const SizedBox(height: 8,),
-                _useMyLocation(),
+                const SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _savedAddresses(),
+                    _useMyLocation(),
+                  ],
+                ),
                 const SizedBox(height: 100),
                 ButtonWidget(
                     text: 'PROCEED',
@@ -267,13 +304,11 @@ class FormScreenState extends State<FormScreen> {
                       if (!_formKey.currentState!.validate()) {
                         return;
                       }
-                      {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => OrderScreeen(businessName: _businessName,)),
-                        );
-                      }
+                      saveSellerDetails();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OrderScreeen(businessName: _businessName,pickupAddress: _pkupAddress,)),);
 
                       _formKey.currentState!.save();
 
@@ -284,7 +319,6 @@ class FormScreenState extends State<FormScreen> {
                       print(_pkupAddress);
                       //Send to API
                     })
-
               ],
             ),
           ),

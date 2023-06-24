@@ -8,8 +8,11 @@ import 'package:lain_dain/notification_screen.dart';
 import 'package:lain_dain/order_screen.dart';
 import 'package:lain_dain/payment_page.dart';
 import 'package:lain_dain/phone.dart';
+import 'package:lain_dain/seller-form.dart';
+import 'package:lain_dain/verify.dart';
 
 import 'firebase_options.dart';
+import 'home.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async{
   print(message.data.toString());
@@ -30,15 +33,17 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
         initialRoute: 'phone',
         debugShowCheckedModeBanner: false,
         // routes: {
         //   'phone': (context) => const MyPhone(),
         //   'verify': (context) => const MyVerify(),
-        //   'home':   (context) => MyApp()
+        //   'home':   (context) =>  const MyApp(),
+        //   'buyer': (context) => const BuyerFormScreen(),
+        //   'seller': (context)=> const FormScreen(selectedAddress: selectedAddress)
         // },
-        home:BuyerFormScreen(),
+        home:MyApp(),
       ));
 
 }

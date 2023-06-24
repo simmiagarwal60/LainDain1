@@ -24,7 +24,7 @@ class BuyerFormScreenState extends State<BuyerFormScreen> {
 
   void saveBuyerDetails() async{
     final buyerRef = FirebaseFirestore.instance.collection('buyers');
-    String buyerid = buyerRef.id;
+    String buyerid = buyerRef.doc().id;
     await buyerRef.doc(buyerid).set({
       'buyer id': buyerid,
       'Full name' : name.text,

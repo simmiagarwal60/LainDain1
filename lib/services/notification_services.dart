@@ -127,7 +127,8 @@ class NotificationServices {
   }
   void storeNotification(notify.Notification notification) async {
     CollectionReference notificationsRef = FirebaseFirestore.instance.collection('notifications');
-    await notificationsRef.doc(notificationsRef.id).set(notification.toMap());
+    String notificationid = notificationsRef.doc().id;
+    await notificationsRef.doc(notificationid).set(notification.toMap());
   }
 
 

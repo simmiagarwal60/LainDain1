@@ -18,7 +18,8 @@ import 'package:lain_dain/models/notification_model.dart' as notify;
 
 class OrderScreeen extends StatefulWidget {
   final String businessName;
-  const OrderScreeen({Key? key, required this.businessName}) : super(key: key);
+  final String pickupAddress;
+  const OrderScreeen({Key? key, required this.businessName, required this.pickupAddress}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -36,7 +37,7 @@ class OrderScreenState extends State<OrderScreeen> {
   //File? _orderImage;
   String? screenshotUrl;
   String? docid ;
-
+  TextEditingController pickupAddressController = TextEditingController();
   List list = [{"title": "FASHION", "value":"FASHION"},{"title":"CLOTHES", "value":"CLOTHES"},{"title": "MOBILE PHONES", "value": "MOBILE PHONES"},{"title": "WATCHES", "value": "WATCHES"},{"title": "LAPTOPS", "value": "LAPTOPS"}];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -46,6 +47,13 @@ class OrderScreenState extends State<OrderScreeen> {
 
   final AuthService authService = AuthService();
   final NotificationServices notificationServices = NotificationServices();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    pickupAddressController.text = widget.pickupAddress;
+  }
 
 
   void storeNotification(notify.Notification notification) async {
@@ -288,6 +296,7 @@ class OrderScreenState extends State<OrderScreeen> {
 
   Widget _buildPkupAddr() {
     return TextFormField(
+      controller: pickupAddressController,
       decoration: const InputDecoration(
         labelText: 'PICK-UP ADDRESS',
         icon: Icon(Icons.location_city),
