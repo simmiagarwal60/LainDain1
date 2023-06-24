@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "718561497000",
+    "project_id": "laindain-d9734",
+    "storage_bucket": "laindain-d9734.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718561497000:android:27e26b93608be984c0579d",
+        "android_client_info": {
+          "package_name": "com.example.lain_dain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718561497000-nbcfu6h76t5in9d6nul4tgoh20k1o1cj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lain_dain",
+            "certificate_hash": "b468f907ccea6547cce9c5eb9fef99f7c2e7ae61"
+          }
+        },
+        {
+          "client_id": "718561497000-2m59fnerbshkvdq0nq2komjrgomgqha5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSGHlz0kwt3m0ZFshSQiLA7nS-ASo75xU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "718561497000-2m59fnerbshkvdq0nq2komjrgomgqha5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "718561497000-278kuq84qu89apcphafgn9bflfb0r3ot.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.lainDain"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
