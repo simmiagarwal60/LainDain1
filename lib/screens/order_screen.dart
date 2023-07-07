@@ -1,25 +1,24 @@
-
-
-import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lain_dain/models/category_model.dart';
+import 'package:lain_dain/models/orders_model.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
 import 'package:lain_dain/services/notification_services.dart';
 import 'package:lain_dain/widget/button_widget.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:lain_dain/widget/order_details.dart';
+import 'package:lain_dain/screens/order_details.dart';
 import 'package:lain_dain/models/notification_model.dart' as notify;
+
+import '../services/notification_services.dart';
 
 class OrderScreeen extends StatefulWidget {
   final String businessName;
   final String pickupAddress;
-  const OrderScreeen({Key? key, required this.businessName, required this.pickupAddress}) : super(key: key);
+
+  const OrderScreeen(
+      {Key? key, required this.businessName, required this.pickupAddress})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -28,47 +27,64 @@ class OrderScreeen extends StatefulWidget {
 }
 
 class OrderScreenState extends State<OrderScreeen> {
-  String _orderValue=" ";
-  String _orderWeightage="";
-  String _mobileNumber="";
-  String _pkupAddr="";
-  String _delAddr="";
-  String defaultvalue='';
-  //File? _orderImage;
+  String _orderValue = '';
+  String _orderWeightage = "";
+  String _mobileNumber = "";
+  String _pkupAddr = "";
+  String _delAddr = "";
+  String defaultvalue = '';
+
   String? screenshotUrl;
-  String? docid ;
+  String? orderid;
+
   TextEditingController pickupAddressController = TextEditingController();
-  List list = [{"title": "FASHION", "value":"FASHION"},{"title":"CLOTHES", "value":"CLOTHES"},{"title": "MOBILE PHONES", "value": "MOBILE PHONES"},{"title": "WATCHES", "value": "WATCHES"},{"title": "LAPTOPS", "value": "LAPTOPS"}];
+  List<CategoryModel> _categoriesList = [];
+
+  List list = [
+    {"title": "FASHION", "value": "FASHION"},
+    {"title": "CLOTHES", "value": "CLOTHES"},
+    {"title": "MOBILE PHONES", "value": "MOBILE PHONES"},
+    {"title": "WATCHES", "value": "WATCHES"},
+    {"title": "LAPTOPS", "value": "LAPTOPS"}
+  ];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey _imageKey = GlobalKey();
-  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+
+  // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  // GlobalKey _imageKey = GlobalKey();
+  // final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   final AuthService authService = AuthService();
   final NotificationServices notificationServices = NotificationServices();
+
+  void getCategoryList() async {
+    _categoriesList = await AuthService().getCategories();
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getCategoryList();
     pickupAddressController.text = widget.pickupAddress;
   }
 
-
   void storeNotification(notify.Notification notification) async {
-    CollectionReference notificationsRef = FirebaseFirestore.instance.collection('notifications');
+    CollectionReference notificationsRef =
+        FirebaseFirestore.instance.collection('notifications');
     await notificationsRef.add(notification.toMap());
   }
 
-
   void _createOrder() async {
-    if (_orderValue.isEmpty ||
+
+    orderid = FirebaseAuth.instance.currentUser!.uid;
+
+    if (_orderValue == 0 ||
         defaultvalue.isEmpty ||
         _orderWeightage.isEmpty ||
         _mobileNumber.isEmpty ||
         _delAddr.isEmpty ||
-        _pkupAddr.isEmpty ) {
+        _pkupAddr.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -89,50 +105,42 @@ class OrderScreenState extends State<OrderScreeen> {
 
     // Save order details and image to Firestore
     try {
-      // final orderData = {
-      //   'orderValue': _orderValue,
-      //   'category': defaultvalue,
-      //   'delivery address': _delAddr,
-      //   'pickup address': _pkupAddr,
-      //   'weightage': _orderWeightage,
-      //   'customerNumber': _mobileNumber,
-      // };
 
-      // convertWidgetToImage();
-      docid = DateTime.now().millisecondsSinceEpoch.toString();
-      final orderRef = FirebaseFirestore.instance.collection('orders');
-      String orderid = orderRef.id;
-      await orderRef.doc(orderid).set({
-        'order id': orderid,
-        'business name' : widget.businessName,
-        'orderValue': _orderValue,
-        'category': defaultvalue,
-        'delivery address': _delAddr,
-        'pickup address': _pkupAddr,
-        'weightage': _orderWeightage,
-        'customerNumber': _mobileNumber,
-      });
-      // Generate FCM token and associate it with the buyer's mobile number
-      //await authService.saveUserDetailsToFirestore(_mobileNumber);
+      // FirebaseFirestore.instance
+      //     .collection('orders')
+      //     .doc(orderid)
+      //     .set(order.toJson());
+      AuthService.instance.saveOrderDetailsToFirestore(
+          "Pending",
+          widget.businessName,
+          defaultvalue,
+          _orderValue,
+          _orderWeightage,
+          _mobileNumber,
+          _pkupAddr,
+          _delAddr);
+
 
       // Retrieve the FCM token associated with the buyer's mobile number
       String? buyerFCMToken = await authService.getBuyerFCMToken(_mobileNumber);
 
-      notify.Notification notification = notify.Notification(
-        id: orderid,
-        title: widget.businessName,
-        amount: _orderValue,
-        message: 'Category: $defaultvalue\nOrder Weightage: $_orderWeightage\n Customer mobile number: $_mobileNumber\n delivery address: $_delAddr\n Pickup address: $_pkupAddr',
-        isAccepted: false,
-      );
-      notificationServices.storeNotification(notification);
-
-      if (buyerFCMToken != null) {
-        // Send notification to the buyer
-        String orderDetails = 'Business Name: ${widget.businessName}\nOrder Value: $_orderValue\nCategory: $defaultvalue\nOrder Weightage: $_orderWeightage';
-        await notificationServices.sendOrderNotification(buyerFCMToken, orderDetails);
-      }
-
+      // notify.Notification notification = notify.Notification(
+      //   id: orderid!,
+      //   title: widget.businessName,
+      //   amount: _orderValue,
+      //   message:
+      //       'Category: $defaultvalue\nOrder Weightage: $_orderWeightage\n Customer mobile number: $_mobileNumber\n delivery address: $_delAddr\n Pickup address: $_pkupAddr',
+      //   isAccepted: false,
+      // );
+      // notificationServices.storeNotification(notification);
+      //
+      // if (buyerFCMToken != null) {
+      //   // Send notification to the buyer
+      //   String orderDetails =
+      //       'Business Name: ${widget.businessName}\nOrder Value: ${_orderValue.toString()}\nCategory: $defaultvalue\nOrder Weightage: $_orderWeightage';
+      //   await notificationServices.sendOrderNotification(
+      //       buyerFCMToken, orderDetails);
+      // }
 
       showDialog(
         context: context,
@@ -142,7 +150,7 @@ class OrderScreenState extends State<OrderScreeen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);// Pop CreateOrderScreen
+                Navigator.pop(context); // Pop CreateOrderScreen
               },
               child: Text('OK'),
             ),
@@ -168,48 +176,67 @@ class OrderScreenState extends State<OrderScreeen> {
     }
   }
 
-
-
-
-  Widget _buildoc(){
+  Widget _buildoc() {
     return Row(
       children: [
-        const Icon(Icons.shopping_cart, color: Color.fromARGB(255, 67, 160, 71),),
-        const SizedBox(width: 13,),
+        const Icon(
+          Icons.shopping_cart,
+          color: Color.fromARGB(255, 67, 160, 71),
+        ),
+        const SizedBox(
+          width: 13,
+        ),
         SizedBox(
           width: 298,
           child: InputDecorator(
-          decoration: const InputDecoration(
-          //border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
-          contentPadding: EdgeInsets.all(10),),
+            decoration: const InputDecoration(
+              //border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)),
+              contentPadding: EdgeInsets.all(10),
+            ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                  isDense: true,
-                  value: defaultvalue,
-                  //isExpanded: true,
-                  menuMaxHeight: 350,
-                  items: [
-                    const DropdownMenuItem(
-                        value: "",
-                        child: Text("ORDER CATEGORY", style: TextStyle(color: Colors.black54, fontSize: 16), textAlign: TextAlign.start,)),
-
-                    ...list.map<DropdownMenuItem<String>>((data){
-                      return DropdownMenuItem(
-                        value: data['value'],
-                        child: Text(data['title']),);
-                    }).toList(),
-                  ],
-                  onChanged: (value){
-                    print('Selected value $value');
-                    setState(() {
-                      defaultvalue = value!;
-                    });
-                  },
+                isDense: true,
+                value: defaultvalue,
+                isExpanded: true,
+                menuMaxHeight: 350,
+                items: [
+                  const DropdownMenuItem(
+                      value: "",
+                      child: Text(
+                        "ORDER CATEGORY",
+                        style: TextStyle(color: Colors.black54, fontSize: 16),
+                        textAlign: TextAlign.start,
+                      )),
+                  ..._categoriesList.map<DropdownMenuItem<String>>((data) {
+                    return DropdownMenuItem(
+                      value: data.name,
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20,
+                            backgroundImage: NetworkImage(data.image),
+                          ),
+                          SizedBox(
+                            width: 12,
+                          ),
+                          Text(data.name,
+                              style: TextStyle(
+                                  color: Colors.black54, fontSize: 16))
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ],
+                onChanged: (value) {
+                  print('Selected value $value');
+                  setState(() {
+                    defaultvalue = value!;
+                  });
+                },
               ),
             ),
           ),
         ),
-
       ],
     );
   }
@@ -228,14 +255,14 @@ class OrderScreenState extends State<OrderScreeen> {
 
         return null;
       },
-      onChanged: (value){
+      onChanged: (value) {
         print('Selected value $value');
         setState(() {
-          _orderValue = value;
+          _orderValue = (value);
         });
       },
       onSaved: (value) {
-        _orderValue = value!;
+        _orderValue = (value!);
       },
     );
   }
@@ -254,7 +281,7 @@ class OrderScreenState extends State<OrderScreeen> {
 
         return null;
       },
-      onChanged: (value){
+      onChanged: (value) {
         print('Selected value $value');
         setState(() {
           _orderWeightage = value;
@@ -282,7 +309,7 @@ class OrderScreenState extends State<OrderScreeen> {
 
         return null;
       },
-      onChanged: (value){
+      onChanged: (value) {
         print('Selected value $value');
         setState(() {
           _mobileNumber = value;
@@ -310,7 +337,7 @@ class OrderScreenState extends State<OrderScreeen> {
 
         return null;
       },
-      onChanged: (value){
+      onChanged: (value) {
         print('Selected value $value');
         setState(() {
           _pkupAddr = value;
@@ -336,7 +363,7 @@ class OrderScreenState extends State<OrderScreeen> {
 
         return null;
       },
-      onChanged: (value){
+      onChanged: (value) {
         print('Selected value $value');
         setState(() {
           _delAddr = value;
@@ -370,27 +397,39 @@ class OrderScreenState extends State<OrderScreeen> {
                 _buildPkupAddr(),
                 _buildDelAddr(),
 
-
                 // SizedBox(height: 16.0),
                 // ButtonWidget(text: 'Select Order Image', onClicked: _selectOrderImage),
                 const SizedBox(height: 100),
-                ButtonWidget(text: 'PROCEED TO CHECKOUT', onClicked: () {
+                ButtonWidget(
+                    text: 'PROCEED TO CHECKOUT',
+                    onClicked: () {
+                      if (!_formKey.currentState!.validate()) {
+                        return;
+                      }
 
-                  if (!_formKey.currentState!.validate()) {
-                    return;
-                  }
+                      _formKey.currentState!.save();
 
-                  _formKey.currentState!.save();
-
-                  _createOrder();
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>OrderDetails(orderValue: _orderValue, orderWeightage: _orderWeightage, pkupAddr: _pkupAddr, delAddr: _delAddr, category: defaultvalue, mobileNumber: _mobileNumber, docid: docid,)));
-                  // print(_orderValue);
-                  // print(_orderWeightage);
-                  // print(_mobileNumber);
-                  // print(_pkupAddr);
-                  // print(_delAddr);
-                  //Send to API
-                })
+                      _createOrder();
+                      notificationServices.sendNotificationToBuyer(_mobileNumber, 'amount: ${_orderValue}, weightage: ${_orderWeightage}', widget.businessName);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OrderDetails(
+                                    orderValue: _orderValue.toString(),
+                                    orderWeightage: _orderWeightage,
+                                    pkupAddr: _pkupAddr,
+                                    delAddr: _delAddr,
+                                    category: defaultvalue,
+                                    mobileNumber: _mobileNumber,
+                                    docid: orderid,
+                                  )));
+                      // print(_orderValue);
+                      // print(_orderWeightage);
+                      // print(_mobileNumber);
+                      // print(_pkupAddr);
+                      // print(_delAddr);
+                      //Send to API
+                    })
               ],
             ),
           ),

@@ -4,8 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:lain_dain/delivery/delivery_details.dart';
+import 'package:lain_dain/screens/delivery_details.dart';
 import 'package:lain_dain/models/pickup_address_model.dart';
+import 'package:lain_dain/services/firebase_auth.dart';
 import 'package:lain_dain/widget/button_widget.dart';
 import 'order_screen.dart';
 
@@ -22,6 +23,7 @@ class FormScreen extends StatefulWidget {
 }
 
 class FormScreenState extends State<FormScreen> {
+  late String _aadhaar;
   late String _pan;
   late String _firstName;
   late String _lastName;
@@ -46,16 +48,17 @@ class FormScreenState extends State<FormScreen> {
   }
 
   void saveSellerDetails() async {
-    final SellerRef = FirebaseFirestore.instance.collection('sellers');
-    String sellerid = SellerRef.doc().id;
-    await SellerRef.doc(sellerid).set({
-      'Seller id': sellerid,
-      'Pan card': _pan,
-      'First name': _firstName,
-      'Last name': _lastName,
-      'business name': _businessName,
-      'pickup address': pkupAddressController.text,
-    });
+    AuthService.instance.updateSellerDetails(_aadhaar, _pan, _firstName, _lastName, _businessName, pkupAddressController.text);
+    // final SellerRef = FirebaseFirestore.instance.collection('sellers');
+    // String sellerid = SellerRef.doc().id;
+    // await SellerRef.doc(sellerid).set({
+    //   'Seller id': sellerid,
+    //   'Pan card': _pan,
+    //   'First name': _firstName,
+    //   'Last name': _lastName,
+    //   'business name': _businessName,
+    //   'pickup address': pkupAddressController.text,
+    // });
   }
 
   void determinePosition() async {
@@ -88,6 +91,32 @@ class FormScreenState extends State<FormScreen> {
         '${placemark.street}, ${placemark.subLocality}, ${placemark.locality},${placemark.postalCode}, ${placemark.administrativeArea}, ${placemark.country}';
 
     pkupAddressController.text = currentAddress;
+  }
+  Widget _buildAadhaar() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        labelText: 'AADHAAR NUMBER',
+        icon: Icon(Icons.payment),
+        iconColor: Color.fromARGB(255, 67, 160, 71),
+      ),
+      maxLength: 10,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Field is Required';
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        _aadhaar = value!;
+      },
+      onChanged: (value) {
+        print('Selected value $value');
+        setState(() {
+          _aadhaar = value!;
+        });
+      },
+    );
   }
 
   Widget _buildPan() {
@@ -282,6 +311,7 @@ class FormScreenState extends State<FormScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                _buildAadhaar(),
                 _buildPan(),
                 _buildFirstName(),
                 _buildLastName(),

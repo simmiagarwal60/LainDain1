@@ -1,18 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:lain_dain/buyer-form.dart';
-import 'package:lain_dain/delivery/add_address_details.dart';
-import 'package:lain_dain/delivery/delivery_details.dart';
-import 'package:lain_dain/notification_screen.dart';
-import 'package:lain_dain/order_screen.dart';
-import 'package:lain_dain/payment_page.dart';
-import 'package:lain_dain/phone.dart';
-import 'package:lain_dain/seller-form.dart';
-import 'package:lain_dain/verify.dart';
+import 'package:lain_dain/screens/buyer-form.dart';
+import 'package:lain_dain/screens/add_address_details.dart';
+import 'package:lain_dain/screens/delivery_details.dart';
+import 'package:lain_dain/screens/notification_screen.dart';
+import 'package:lain_dain/screens/order_screen.dart';
+import 'package:lain_dain/screens/payment_page.dart';
+import 'package:lain_dain/screens/phone.dart';
+import 'package:lain_dain/screens/seller-form.dart';
+import 'package:lain_dain/screens/seller_orderHistory.dart';
+import 'package:lain_dain/screens/verify.dart';
 
 import 'firebase_options.dart';
-import 'home.dart';
+import 'screens/home.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message)async{
   print(message.data.toString());
@@ -33,6 +35,13 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await FirebaseMessaging.instance.getInitialMessage();
+  await FirebaseMessaging.instance.setAutoInitEnabled(true);
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
   runApp(MaterialApp(
         initialRoute: 'phone',
         debugShowCheckedModeBanner: false,
@@ -43,7 +52,7 @@ void main() async {
         //   'buyer': (context) => const BuyerFormScreen(),
         //   'seller': (context)=> const FormScreen(selectedAddress: selectedAddress)
         // },
-        home:MyApp(),
+        home: MyApp()
       ));
 
 }

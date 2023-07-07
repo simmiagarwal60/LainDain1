@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:lain_dain/delivery/delivery_details.dart';
+import 'package:lain_dain/screens/delivery_details.dart';
 
 import '../models/pickup_address_model.dart';
 import '../widget/button_widget.dart';

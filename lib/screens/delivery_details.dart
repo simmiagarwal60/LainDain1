@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lain_dain/delivery/add_address_details.dart';
-import 'package:lain_dain/seller-form.dart';
+import 'package:lain_dain/screens/add_address_details.dart';
+import 'package:lain_dain/screens/seller-form.dart';
 
 import '../models/pickup_address_model.dart';
 import '../widget/button_widget.dart';
@@ -109,8 +109,7 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
                           .docs
                           .map((e) => PickupAddress.fromJson(
                               e.data() as Map<String, dynamic>))
-                          .toList() ??
-                      [];
+                          .toList() ?? [];
                   if (addresses.isNotEmpty) {
                     return ListView.builder(
                       physics: const BouncingScrollPhysics(),

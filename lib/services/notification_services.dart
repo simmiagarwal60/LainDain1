@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:math';
-
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:lain_dain/screens/notification_screen.dart';
+import 'package:lain_dain/services/firebase_auth.dart';
 import '../models/notification_model.dart' as notify;
 
 class NotificationServices {
@@ -22,8 +25,14 @@ class NotificationServices {
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (payload) {
+      if(payload != null){
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> NotificationScreen(info: payload.toString())));
+      }
+
       handleMessage(context, message);
     });
+
+
   }
 
   void requestNotificationPermissions() async {
@@ -69,7 +78,8 @@ class NotificationServices {
         channelDescription: "Your channel description",
         importance: Importance.high,
         priority: Priority.high,
-        ticker: 'ticker');
+        ticker: 'ticker',
+    sound: RawResourceAndroidNotificationSound('notification'));
     const DarwinNotificationDetails darwinNotificationDetails =
         DarwinNotificationDetails(
             presentAlert: true, presentBadge: true, presentSound: true);
@@ -81,7 +91,8 @@ class NotificationServices {
           0,
           message.notification!.title.toString(),
           message.notification!.body.toString(),
-          notificationDetails);
+          notificationDetails,
+      payload: message.data['body']);
     });
   }
 
@@ -108,27 +119,68 @@ class NotificationServices {
     });
   }
 
-  Future<void> sendOrderNotification(String buyerFCMToken, String orderDetails) async {
-    messaging.requestPermission();
-    // Retrieve the buyer's FCM token from your database using the mobile number
-    // Example code for retrieving from Firestore:
-
-
-    // Use the buyerFCMToken to send the notification to the buyer
-    // Customize the notification payload as per your requirements
-    // Example code for sending a notification:
-    await messaging.sendMessage(
-      to: buyerFCMToken,
-      data: {
-        'title': 'New Order',
-        'body': 'You have a new order: $orderDetails',
-      }
-    );
-  }
+  // Future<void> sendOrderNotification(String buyerFCMToken, String orderDetails) async {
+  //   messaging.requestPermission();
+  //   // Retrieve the buyer's FCM token from your database using the mobile number
+  //   // Example code for retrieving from Firestore:
+  //
+  //
+  //   // Use the buyerFCMToken to send the notification to the buyer
+  //   // Customize the notification payload as per your requirements
+  //   // Example code for sending a notification:
+  //   await messaging.sendMessage(
+  //     to: buyerFCMToken,
+  //     data: {
+  //       'title': 'New Order',
+  //       'body': 'You have a new order: $orderDetails',
+  //     }
+  //   );
+  // }
   void storeNotification(notify.Notification notification) async {
     CollectionReference notificationsRef = FirebaseFirestore.instance.collection('notifications');
     String notificationid = notificationsRef.doc().id;
     await notificationsRef.doc(notificationid).set(notification.toMap());
+  }
+
+  Future<void> sendNotificationToBuyer(String buyerMobileNumber, String message, String title) async {
+    const String url = 'https://fcm.googleapis.com/fcm/send';
+    const String serverKey = 'AAAAp02aT6g:APA91bE00EirjEbwY1VPyySXtWKgJ8yX7YgTRRRIuBuFqjnTi5VWzMR7NiBx14ecjar9S-4OGyv22wr8zSOmumEmxxDObi_eWRasqvyii_oF3wrNPYCqyUZ08T-DUFLzmxGQmlEFfPrE'; // Obtain your FCM server key from Firebase console
+
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'key=$serverKey',
+    };
+
+    final Map<String, String> notification = {
+      'title': 'New Order',
+      'body' : 'You have a new order. Tap to view details.',
+      'android_channel_id': 'simran'
+    };
+
+
+    final body = {
+      'notification': notification,
+      'priority': 'high',
+      'body': message,
+      'title': title,
+      'data': {
+        'screen': 'order_acceptance', // Identify the screen to navigate on click
+        // Add additional data if required
+      },
+      'to': AuthService.instance.getBuyerFCMToken(buyerMobileNumber).toString(), // Buyer's device token obtained during login/authentication
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      print('Notification sent successfully');
+    } else {
+      print('Failed to send notification with status: ${response.statusCode}');
+    }
   }
 
 

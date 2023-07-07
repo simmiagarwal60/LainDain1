@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:lain_dain/notification_screen.dart';
+import 'package:lain_dain/models/buyer.dart';
+import 'package:lain_dain/screens/buyer_orderScreen.dart';
+import 'package:lain_dain/screens/notification_screen.dart';
+import 'package:lain_dain/services/firebase_auth.dart';
 
 class BuyerFormScreen extends StatefulWidget {
   const BuyerFormScreen({Key? key}) : super(key: key);
@@ -23,16 +26,7 @@ class BuyerFormScreenState extends State<BuyerFormScreen> {
   TextEditingController pincode = TextEditingController();
 
   void saveBuyerDetails() async{
-    final buyerRef = FirebaseFirestore.instance.collection('buyers');
-    String buyerid = buyerRef.doc().id;
-    await buyerRef.doc(buyerid).set({
-      'buyer id': buyerid,
-      'Full name' : name.text,
-      'Email': email.text,
-      'Phone number': PhoneNumber.text,
-      'Full House Address': address.text,
-      'pincode': pincode.text,
-    });
+    AuthService.instance.updateBuyerDetails(name.text, email.text, PhoneNumber.text, address.text, pincode.text);
   }
 
  void determinePosition() async{
@@ -221,7 +215,7 @@ class BuyerFormScreenState extends State<BuyerFormScreen> {
             } else {
               print('Submited');
               saveBuyerDetails();
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>NotificationScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> BuyerOrderScreen()));
             }
           },
           onStepCancel: () {

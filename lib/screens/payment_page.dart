@@ -114,47 +114,47 @@ class _PaymentScreenState extends State<PaymentScreen> implements PayUCheckoutPr
     );
   }
 
-//   void initiatePayment(BuildContext context) async {
-//     _checkoutPro.startPayment(
-//       orderId: widget.orderId,
-//       amount: widget.amount.toString(),
-//       merchantKey: 'YOUR_MERCHANT_KEY',
-//       merchantId: 'YOUR_MERCHANT_ID',
-//       isProduction: false,
-//       onSuccess: (paymentId) {
-//         // Payment successful
-//         showDialog(
-//           context: context,
-//           builder: (context) => AlertDialog(
-//             title: Text('Payment Successful'),
-//             content: Text('Thank you for your payment.'),
-//             actions: [
-//               ElevatedButton(
-//                 onPressed: () => Navigator.pop(context),
-//                 child: Text('OK'),
-//               ),
-//             ],
-//           ),
-//         );
-//       },
-//       onFailure: () {
-//         // Payment failed
-//         showDialog(
-//           context: context,
-//           builder: (context) => AlertDialog(
-//             title: Text('Payment Failed'),
-//             content: Text('Sorry, the payment could not be processed.'),
-//             actions: [
-//               ElevatedButton(
-//                 onPressed: () => Navigator.pop(context),
-//                 child: Text('OK'),
-//               ),
-//             ],
-//           ),
-//         );
-//       },
-//     );
-//   }
+  // void initiatePayment(BuildContext context) async {
+  //   _checkoutPro.startPayment(
+  //     orderId: widget.orderId,
+  //     amount: widget.amount.toString(),
+  //     merchantKey: 'YOUR_MERCHANT_KEY',
+  //     merchantId: 'YOUR_MERCHANT_ID',
+  //     isProduction: false,
+  //     onSuccess: (paymentId) {
+  //       // Payment successful
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) => AlertDialog(
+  //           title: Text('Payment Successful'),
+  //           content: Text('Thank you for your payment.'),
+  //           actions: [
+  //             ElevatedButton(
+  //               onPressed: () => Navigator.pop(context),
+  //               child: Text('OK'),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //     onFailure: () {
+  //       // Payment failed
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) => AlertDialog(
+  //           title: Text('Payment Failed'),
+  //           content: Text('Sorry, the payment could not be processed.'),
+  //           actions: [
+  //             ElevatedButton(
+  //               onPressed: () => Navigator.pop(context),
+  //               child: Text('OK'),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }
 class PayUTestCredentials {
   static const merchantKey = "H2SXqA";//TODO: Add Merchant Key
@@ -172,6 +172,7 @@ class PayUTestCredentials {
 
 class PayUParams {
   static Map createPayUPaymentParams() {
+
     var siParams = {
       PayUSIParamsKeys.isFreeTrial: true,
       PayUSIParamsKeys.billingAmount: '1',              //Required

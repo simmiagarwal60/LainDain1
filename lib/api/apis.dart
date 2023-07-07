@@ -41,16 +41,16 @@ class APIs {
     return res;
   }
 
-  static Future<void> createBuyer() async {
-    final buyer = Buyer(
-        full_name: '',
-        email: user.email.toString(),
-        phoneNumber: user.phoneNumber.toString(),
-        address: '',
-        pincode: '');
-    return await firestore
-        .collection('buyer')
-        .doc(user.uid)
-        .set(buyer.toJson());
-  }
+  // static Future<void> createBuyer() async {
+  //   final buyer = Buyer(
+  //       full_name: '',
+  //       email: user.email.toString(),
+  //       phoneNumber: user.phoneNumber.toString(),
+  //       address: '',
+  //       pincode: '');
+  //   return await firestore
+  //       .collection('buyer')
+  //       .doc(user.uid)
+  //       .set(buyer.toJson());
+  // }
 }

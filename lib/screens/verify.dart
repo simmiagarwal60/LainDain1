@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lain_dain/home.dart';
-import 'package:lain_dain/phone.dart';
+import 'package:lain_dain/screens/home.dart';
+import 'package:lain_dain/screens/phone.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
 import 'package:pinput/pinput.dart';
 
@@ -120,7 +120,7 @@ class _MyVerifyState extends State<MyVerify> {
 
                         // Sign the user in (or link) with the credential
                         UserCredential userCredential = await auth.signInWithCredential(credential);
-                        await AuthService().saveUserDetailsToFirestore(userCredential.user!.phoneNumber!);
+                        await AuthService().saveUserDetailsToFirestore(userCredential.user!.phoneNumber!, userCredential.user!.uid);
                         // Navigator.pushNamedAndRemoveUntil(
                         //     context, "home", (route) => false);
 

@@ -1,10 +1,12 @@
 import 'dart:math';
 
-import 'package:lain_dain/buyer-form.dart';
+import 'package:lain_dain/screens/buyer-form.dart';
 import 'package:lain_dain/models/pickup_address_model.dart';
-import 'package:lain_dain/seller-form.dart';
+import 'package:lain_dain/screens/seller-form.dart';
 import 'package:lain_dain/widget/button_widget.dart';
 import 'package:flutter/material.dart';
+
+import '../services/firebase_auth.dart';
 
 
 // class Verhoeff {
@@ -86,16 +88,6 @@ class _MainPageState extends State<MainPage> {
     super.dispose();
   }
 
-  // void storeAadhaarNumber(String aadhaarNumber) async {
-  //   //CollectionReference phoneNumberCollection = FirebaseFirestore.instance.collection('phone_numbers');
-  //   String uid = FirebaseAuth.instance.currentUser!.uid;
-  //   try {
-  //     await APIs.createUser().set({'aadhaar_number': aadhaarNumber});
-  //     print('Aadhaar number stored in Firebase successfully');
-  //   } catch (e) {
-  //     print('Error storing Aadhaar number: $e');
-  //   }
-  // }
 
   void _validateAadhaarNumber() {
     String aadhaar = _aadharController.text.trim();
@@ -221,50 +213,15 @@ class _MainPageState extends State<MainPage> {
             ButtonWidget(
               text: 'Seller',
               onClicked: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return SizedBox(
-                        height: 200,
-                        child: AlertDialog(
-                          title: const Text("Enter your Aadhar number"),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                          TextFormField(
-                            controller: _aadharController,
-                          decoration: const InputDecoration(
-                          labelText: 'AADHAR NUMBER',
-                            icon: Icon(Icons.payment),
-                            iconColor: Color.fromARGB(255, 67, 160, 71),
-                          ),
-                          maxLength: 14,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Field is Required';
-                            }
-
-                            return null;
-                          },
-                        ),
-                              const SizedBox(height: 16),
-                              ButtonWidget(
-                                  text: 'Submit',
-                                  onClicked: () {
-                                    _validateAadhaarNumber();
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>FormScreen(selectedAddress: pickupAddress)));
-                                  })
-                            ],
-                          ),
-                        ),
-                      );
-                    });
+                AuthService.instance.updateUserRole("Seller");
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>FormScreen(selectedAddress: pickupAddress)));
               },
             ),
             const SizedBox(height: 16),
             ButtonWidget(
               text: 'Buyer',
               onClicked: () {
+                AuthService.instance.updateUserRole("Buyer");
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const BuyerFormScreen()),

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class Notification {
    String id;
@@ -19,7 +18,7 @@ class Notification {
     return Notification(
       id: id,
       title: map['title'] as String,
-      amount: map['amount'] as String,
+      amount: map['amount'] ,
       message: map['message'] as String,
       isAccepted: map['isAccepted'] as bool,
     );
