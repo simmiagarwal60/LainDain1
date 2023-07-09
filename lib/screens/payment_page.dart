@@ -177,8 +177,8 @@ class PayUParams {
       PayUSIParamsKeys.isFreeTrial: true,
       PayUSIParamsKeys.billingAmount: '1',              //Required
       PayUSIParamsKeys.billingInterval: 1,              //Required
-      PayUSIParamsKeys.paymentStartDate: '2023-04-20',  //Required
-      PayUSIParamsKeys.paymentEndDate: '2023-04-30',    //Required
+      PayUSIParamsKeys.paymentStartDate: '2024-07-09',  //Required
+      PayUSIParamsKeys.paymentEndDate: '2024-07-10',    //Required
       PayUSIParamsKeys.billingCycle: 'daily', //Can be any of 'daily','weekly','yearly','adhoc','once','monthly'
       PayUSIParamsKeys.remarks: 'Test SI transaction',
       PayUSIParamsKeys.billingCurrency: 'INR',

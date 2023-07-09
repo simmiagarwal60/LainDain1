@@ -52,7 +52,7 @@ void main() async {
         //   'buyer': (context) => const BuyerFormScreen(),
         //   'seller': (context)=> const FormScreen(selectedAddress: selectedAddress)
         // },
-        home: MyApp()
+        home: PaymentScreen(orderId: 'gfss', amount: 'fgsgda', businessName: 'fgdsg')
       ));
 
 }

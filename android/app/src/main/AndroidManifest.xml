@@ -1,5 +1,7 @@
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.lain_dain">
+    package="com.example.lain_dain"
+    xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
@@ -8,14 +10,13 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <application
+    <application tools:replace="android:name, android:icon"
         android:name="${applicationName}"
-        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher">
+        <!--android:requestLegacyExternalStorage="true"-->
 <!--       <meta-data android:name="com.google.android.gms.version"-->
 <!--           android:value="@integer/google_play_services_version" />-->
-       <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyAFKLjVkpltZ5D2HglIzNHXIH2GoaVF0L4"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -60,5 +61,7 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="simran" />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAFKLjVkpltZ5D2HglIzNHXIH2GoaVF0L4"/>
     </application>
 </manifest>
