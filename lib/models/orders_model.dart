@@ -35,14 +35,14 @@ class Orders {
     };
   }
   Orders.fromJson(Map<String, dynamic> json){
-    orderId = json['orderId'] ?? '';
-    businessName = json['businessName']?? '' ;
+    orderId = json['orderId'];
+    businessName = json['businessName'];
     orderValue =(json['orderValue']);
-    orderCategory = json['orderCategory'] ?? '';
-    orderWeightage = json['orderWeightage'] ?? '';
-    customerMobileNumber = json['customerMobileNumber'] ?? '' ;
-    pickupAddress = json['pickupAddress'] ?? '' ;
-    deliveryAddress = json['deliveryAddress'] ?? '' ;
+    orderCategory = json['orderCategory'];
+    orderWeightage = json['orderWeightage'];
+    customerMobileNumber = json['customerMobileNumber'];
+    pickupAddress = json['pickupAddress'];
+    deliveryAddress = json['deliveryAddress'];
     status = json['status'] ?? '' ;
   }
 }

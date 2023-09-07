@@ -1,30 +1,34 @@
 class Users {
+  late String fullName;
   late String phoneNumber;
-  late String userRole;
   late String fcmToken;
   late String userId;
+  late String image;
 
   Users({
+    required this.fullName,
     required this.phoneNumber,
     required this.fcmToken,
     required this.userId,
-    required this.userRole,
+    required this.image
   });
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
+    data['fullName'] = fullName;
     data['phoneNumber'] = phoneNumber;
     data['fcmToken'] = fcmToken;
     data['userId'] = userId;
-    data['userRole'] = userRole;
+    data['image'] = image;
 
     return data;
   }
 
   Users.fromJson(Map<String, dynamic> json) {
+    fullName = json['fullName'] ?? '';
     phoneNumber = json['phoneNumber'] ?? '';
     fcmToken = json['fcmToken'] ?? '';
     userId = json['userId'] ?? '';
-    userRole = json['userRole'] ?? '';
+    image = json['image'] ?? '';
   }
 }

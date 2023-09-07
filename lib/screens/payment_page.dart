@@ -220,7 +220,7 @@ class PayUParams {
       PayUPaymentParamKey.productInfo: "Info",
       PayUPaymentParamKey.firstName: "Abc",
       PayUPaymentParamKey.email: "test@gmail.com",
-      PayUPaymentParamKey.phone: "8306808044",
+      PayUPaymentParamKey.phone: "9906129144",
       PayUPaymentParamKey.ios_surl: PayUTestCredentials.iosSurl,
       PayUPaymentParamKey.ios_furl: PayUTestCredentials.iosFurl,
       PayUPaymentParamKey.android_surl: PayUTestCredentials.androidSurl,

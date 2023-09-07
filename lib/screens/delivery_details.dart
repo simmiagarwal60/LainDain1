@@ -31,7 +31,9 @@ class _DeliveryDetailsState extends State<DeliveryDetails> {
   }
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> fetchAddresses() {
-    return FirebaseFirestore.instance.collection('addresses').snapshots();
+    return FirebaseFirestore.instance
+        .collection('sellerAddresses')
+        .doc(FirebaseAuth.instance.currentUser!.uid).collection('address').snapshots();
   }
 
   void printname(String name) {

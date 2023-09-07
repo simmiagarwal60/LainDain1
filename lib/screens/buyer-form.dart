@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lain_dain/models/buyer.dart';
+import 'package:lain_dain/screens/buyer_main_screen.dart';
 import 'package:lain_dain/screens/buyer_orderScreen.dart';
 import 'package:lain_dain/screens/notification_screen.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
@@ -24,9 +26,10 @@ class BuyerFormScreenState extends State<BuyerFormScreen> {
   TextEditingController PhoneNumber = TextEditingController();
   TextEditingController address = TextEditingController();
   TextEditingController pincode = TextEditingController();
+  String countryCode = '+91';
 
   void saveBuyerDetails() async{
-    AuthService.instance.updateBuyerDetails(name.text, email.text, PhoneNumber.text, address.text, pincode.text);
+    AuthService.instance.updateBuyerDetails(name.text, email.text, '+91' + PhoneNumber.text, address.text, pincode.text);
   }
 
  void determinePosition() async{
@@ -213,9 +216,10 @@ class BuyerFormScreenState extends State<BuyerFormScreen> {
                 _activeStepIndex += 1;
               });
             } else {
-              print('Submited');
+              print('Submitted');
+              print('currentUserPhoneNumber: ${FirebaseAuth.instance.currentUser!.phoneNumber}');
               saveBuyerDetails();
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> BuyerOrderScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> BuyerMainScreen()));
             }
           },
           onStepCancel: () {

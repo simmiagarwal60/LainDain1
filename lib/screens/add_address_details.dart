@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lain_dain/screens/delivery_details.dart';
 
@@ -59,10 +60,19 @@ class _AddAddressDetailsState extends State<AddAddressDetails> {
       //   'city': address.city,
       //   'state': address.state,
       // });
+
+      // FirebaseFirestore.instance
+      //     .collection('addresses')
+      //     .doc(id)
+      //     .set(address.toJson());
+
+      DocumentReference orderDocument = FirebaseFirestore.instance
+          .collection('sellerAddresses')
+          .doc(FirebaseAuth.instance.currentUser!.uid).collection('address').doc();
+      String docId = orderDocument.id;
       FirebaseFirestore.instance
-          .collection('addresses')
-          .doc(id)
-          .set(address.toJson());
+          .collection('sellerAddresses')
+          .doc(FirebaseAuth.instance.currentUser!.uid).collection('address').doc(docId).set(address.toJson());
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Address saved successfully')),

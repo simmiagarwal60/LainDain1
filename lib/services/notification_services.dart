@@ -8,12 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lain_dain/screens/notification_screen.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
+import 'package:lain_dain/widget/pending_orders.dart';
 import '../models/notification_model.dart' as notify;
 
 class NotificationServices {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  String? buyerfcmToken;
 
   void initLocalNotification(
       BuildContext context, RemoteMessage message) async {
@@ -26,7 +28,7 @@ class NotificationServices {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (payload) {
       if(payload != null){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> NotificationScreen(info: payload.toString())));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> PendingOrders()));
       }
 
       handleMessage(context, message);
@@ -119,23 +121,6 @@ class NotificationServices {
     });
   }
 
-  // Future<void> sendOrderNotification(String buyerFCMToken, String orderDetails) async {
-  //   messaging.requestPermission();
-  //   // Retrieve the buyer's FCM token from your database using the mobile number
-  //   // Example code for retrieving from Firestore:
-  //
-  //
-  //   // Use the buyerFCMToken to send the notification to the buyer
-  //   // Customize the notification payload as per your requirements
-  //   // Example code for sending a notification:
-  //   await messaging.sendMessage(
-  //     to: buyerFCMToken,
-  //     data: {
-  //       'title': 'New Order',
-  //       'body': 'You have a new order: $orderDetails',
-  //     }
-  //   );
-  // }
   void storeNotification(notify.Notification notification) async {
     CollectionReference notificationsRef = FirebaseFirestore.instance.collection('notifications');
     String notificationid = notificationsRef.doc().id;
@@ -144,8 +129,12 @@ class NotificationServices {
 
   Future<void> sendNotificationToBuyer(String buyerMobileNumber, String message, String title) async {
     const String url = 'https://fcm.googleapis.com/fcm/send';
-    const String serverKey = 'AAAAp02aT6g:APA91bE00EirjEbwY1VPyySXtWKgJ8yX7YgTRRRIuBuFqjnTi5VWzMR7NiBx14ecjar9S-4OGyv22wr8zSOmumEmxxDObi_eWRasqvyii_oF3wrNPYCqyUZ08T-DUFLzmxGQmlEFfPrE'; // Obtain your FCM server key from Firebase console
+    const String serverKey = 'AAAAp02aT6g:APA91bE00EirjEbwY1VPyySXtWKgJ8yX7YgTRRRIuBuFqjnTi5VWzMR7NiBx14ecjar9S-4OGyv22wr8zSOmumEmxxDObi_eWRasqvyii_oF3wrNPYCqyUZ08T-DUFLzmxGQmlEFfPrE';
+    // Obtain your FCM server key from Firebase console
 
+    await AuthService.instance.getBuyerFCMToken(buyerMobileNumber).then((String? result){
+      buyerfcmToken = result;
+    });
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'key=$serverKey',
@@ -167,7 +156,7 @@ class NotificationServices {
         'screen': 'order_acceptance', // Identify the screen to navigate on click
         // Add additional data if required
       },
-      'to': AuthService.instance.getBuyerFCMToken(buyerMobileNumber).toString(), // Buyer's device token obtained during login/authentication
+      'to': buyerfcmToken, // Buyer's device token obtained during login/authentication
     };
 
     final response = await http.post(
@@ -178,6 +167,9 @@ class NotificationServices {
 
     if (response.statusCode == 200) {
       print('Notification sent successfully');
+      print('mobileNumber: ${buyerMobileNumber}');
+      print('buyerFcmToken: $buyerfcmToken');
+
     } else {
       print('Failed to send notification with status: ${response.statusCode}');
     }

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "718561497000",
+    "firebase_url": "https://laindain-d9734-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "laindain-d9734",
     "storage_bucket": "laindain-d9734.appspot.com"
   },
@@ -14,10 +15,54 @@
       },
       "oauth_client": [
         {
-          "client_id": "718561497000-nbcfu6h76t5in9d6nul4tgoh20k1o1cj.apps.googleusercontent.com",
+          "client_id": "718561497000-citnnanfnej2ltl7rjajbpv4a2rpd8q2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.lain_dain",
+            "certificate_hash": "5bfede7e24ef26f0684f759ba373aa516f92d040"
+          }
+        },
+        {
+          "client_id": "718561497000-2m59fnerbshkvdq0nq2komjrgomgqha5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSGHlz0kwt3m0ZFshSQiLA7nS-ASo75xU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "718561497000-2m59fnerbshkvdq0nq2komjrgomgqha5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "718561497000-278kuq84qu89apcphafgn9bflfb0r3ot.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.lainDain"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718561497000:android:f32b25e5847dba6dc0579d",
+        "android_client_info": {
+          "package_name": "com.example.laindain_adminpanel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718561497000-rak6iuvcpkoqg5handlt2eo13fsikpsp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.laindain_adminpanel",
             "certificate_hash": "b468f907ccea6547cce9c5eb9fef99f7c2e7ae61"
           }
         },

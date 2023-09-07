@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lain_dain/screens/buyer-form.dart';
 import 'package:lain_dain/models/pickup_address_model.dart';
 import 'package:lain_dain/screens/seller-form.dart';
@@ -70,7 +71,6 @@ class MyApp extends StatelessWidget {
 }
 
 class MainPage extends StatefulWidget {
-  //final String aadhaarNumber;
   const MainPage({Key? key}) : super(key: key);
 
   @override
@@ -78,32 +78,14 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final TextEditingController _aadharController = TextEditingController();
   bool _isValid = false;
+  bool isSeller = false;
+  bool isBuyer = false;
+  bool isClicked = false;
   PickupAddress pickupAddress = PickupAddress(id: '', fullName: '', pincode: '', houseNumber: '', city: '', state: '');
 
-  @override
-  void dispose() {
-    _aadharController.dispose();
-    super.dispose();
-  }
 
 
-  void _validateAadhaarNumber() {
-    String aadhaar = _aadharController.text.trim();
-
-    setState(() {
-      _isValid = validateAadhaarNumber(aadhaar);
-    });
-
-    if (_isValid) {
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => FormScreen(aadharNumber: _aadharController.text)));
-    } else {
-      print("Invalid Aadhar!!!");
-    }
-  }
 
   bool validateAadhaarNumber(String aadhaarNumber) {
     // Aadhaar number regex pattern
@@ -114,41 +96,6 @@ class _MainPageState extends State<MainPage> {
     return regex.hasMatch(aadhaarNumber);
   }
 
-  // void authenticatePhoneNumberWithAadhaar(String phoneNumber, String aadhaarNumber) async {
-  //   // Construct the API endpoint URL
-  //   String apiUrl = 'https://<YOUR_API_ENDPOINT>'; // Replace with your API endpoint URL
-  //
-  //   // Prepare the request body with the required parameters
-  //   String transactionId = '<GENERATE_UNIQUE_TRANSACTION_ID>'; // Replace with your transaction ID
-  //   String otp = '<USER_ENTERED_OTP>'; // Replace with the OTP entered by the user
-  //   String demographicDetails = '<USER_ENTERED_DEMOGRAPHIC_DETAILS>'; // Replace with the demographic details entered by the user
-  //
-  //   Map<String, dynamic> requestBody = {
-  //     'uid': aadhaarNumber,
-  //     'mobile': phoneNumber,
-  //     'txn': transactionId,
-  //     'otp': otp,
-  //     'details': demographicDetails,
-  //   };
-  //
-  //   // Make the API call
-  //   http.Response response = await http.post(
-  //     Uri.parse(apiUrl),
-  //     body: requestBody,
-  //   );
-  //
-  //   // Parse the API response
-  //   if (response.statusCode == 200) {
-  //     // Authentication successful
-  //     // Parse the response and handle accordingly
-  //     // Example: Check the 'status' field to determine the authentication status
-  //     // Example: String apiResponse = response.body;
-  //   } else {
-  //     // Error occurred
-  //     // Handle the error response
-  //     // Example: String errorMessage = response.body;
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -205,29 +152,133 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("I am a",
+            const Text("Which one are you?",
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
             const SizedBox(
               height: 25,
             ),
-            ButtonWidget(
-              text: 'Seller',
-              onClicked: () {
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    InkWell(
+                      onTap: (){
+                        setState(() {
+                          isSeller = true;
+                          isBuyer = false;
+                        });
+                      },
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                          side: isSeller ? BorderSide(
+                            color: Colors.green,
+                            width: 2.0,
+                          ): BorderSide(color: Colors.white,
+                            width: 0,),
+                        ),
+                        child: Container(
+                          width: 130,
+                          height: 130,
+                          decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(100)
+                          ),
+                          child: Center(
+                            child: Image.network('https://cdn-icons-png.flaticon.com/128/506/506185.png', scale: 2,)
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('Seller', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)
+                  ],
+                ),
+
+                SizedBox(width: 10,),
+                Column(
+                  children: [
+                    InkWell(
+                      onTap: (){
+                        setState(() {
+                          isBuyer = true;
+                          isSeller = false;
+                        });
+                      },
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                          side: isBuyer ? BorderSide(
+                            color: Colors.green,
+                            width: 2.0,
+                          ): BorderSide(color: Colors.white,
+                            width: 0,),
+
+                        ),
+                        child: Container(
+                          width: 130,
+                          height: 130,
+                          decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(100)
+                          ),
+                          child: Center(
+                            child: Image.network('https://cdn-icons-png.flaticon.com/128/5466/5466062.png', scale: 2,)
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('Buyer', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 70,),
+            ButtonWidget(text: 'NEXT', onClicked: (){
+              if(isSeller){
                 AuthService.instance.updateUserRole("Seller");
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>FormScreen(selectedAddress: pickupAddress)));
-              },
-            ),
-            const SizedBox(height: 16),
-            ButtonWidget(
-              text: 'Buyer',
-              onClicked: () {
+              }
+              else if(isBuyer){
+                // AuthService().saveUserDetailsToFirestore(
+                //     FirebaseAuth.instance.currentUser!.phoneNumber!,
+                //     FirebaseAuth.instance.currentUser!.uid);
                 AuthService.instance.updateUserRole("Buyer");
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const BuyerFormScreen()),
                 );
-              },
-            ),
+              }
+            })
+            // ButtonWidget(
+            //   text: 'Seller',
+            //   onClicked: () {
+            //     AuthService.instance.updateUserRole("Seller");
+            //     Navigator.push(context, MaterialPageRoute(builder: (context)=>FormScreen(selectedAddress: pickupAddress)));
+            //   },
+            // ),
+            // const SizedBox(height: 16),
+            // ButtonWidget(
+            //   text: 'Buyer',
+            //   onClicked: () {
+            //     AuthService().saveUserDetailsToFirestore(
+            //         FirebaseAuth.instance.currentUser!.phoneNumber!,
+            //         FirebaseAuth.instance.currentUser!.uid);
+            //     AuthService.instance.updateUserRole("Buyer");
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => const BuyerFormScreen()),
+                //);
+            //   },
+            // ),
           ],
         ),
       ));

@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lain_dain/screens/buyer_main_screen.dart';
+import 'package:lain_dain/screens/seller_main.dart';
+import 'package:lain_dain/screens/sign_in.dart';
 import 'package:lain_dain/services/notification_services.dart';
 import 'package:lain_dain/screens/verify.dart';
-
 
 class MyPhone extends StatefulWidget {
   const MyPhone({Key? key}) : super(key: key);
@@ -30,24 +33,28 @@ class _MyPhoneState extends State<MyPhone> {
       print("device token:");
       print(value);
     });
-
   }
-  // void storePhoneNumber(String phoneNumber) async {
-  //   // CollectionReference usersCollection =
-  //   // FirebaseFirestore.instance.collection('users');
-  //   //String uid = FirebaseAuth.instance.currentUser!.uid;
-  //
-  //   try {
-  //     await APIs.createUser().set({'phone_number': phoneNumber});
-  //     print('Phone number stored in Firebase successfully');
-  //   } catch (e) {
-  //     print('Error storing phone number: $e');
-  //   }
-  // }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> fetchUserDataStream(
+      String phoneNumber) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(phoneNumber)
+        .snapshots();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("LainDain"),
+        backgroundColor: const Color.fromARGB(255, 67, 160, 71),
+      ),
       body: Container(
         margin: const EdgeInsets.only(left: 25, right: 25),
         alignment: Alignment.center,
@@ -65,15 +72,15 @@ class _MyPhoneState extends State<MyPhone> {
               // ),
               const Text(
                 "Lain Dain",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 10,
               ),
               const Text(
-                "We need to register your phone number before getting started!",
+                "Please enter your phone number to verify your account",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -110,15 +117,15 @@ class _MyPhoneState extends State<MyPhone> {
                     ),
                     Expanded(
                         child: TextField(
-                          keyboardType: TextInputType.phone,
-                          onChanged: (value) {
-                            phone = value;
-                          },
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Phone",
-                          ),
-                        ))
+                      keyboardType: TextInputType.phone,
+                      onChanged: (value) {
+                        phone = value;
+                      },
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Phone",
+                      ),
+                    ))
                   ],
                 ),
               ),
@@ -134,23 +141,50 @@ class _MyPhoneState extends State<MyPhone> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10))),
                     onPressed: () async {
+                      String phoneNum = countryController.text + phone;
                       await FirebaseAuth.instance.verifyPhoneNumber(
-                        phoneNumber: countryController.text + phone,
+                        phoneNumber: phoneNum,
                         verificationCompleted:
-                            (PhoneAuthCredential credential) {},
+                            (PhoneAuthCredential credential){
+                        },
                         verificationFailed: (FirebaseAuthException e) {},
                         codeSent: (String verificationId, int? resendToken) {
                           MyPhone.verify = verificationId;
                           //storePhoneNumber(phone);
                           //Navigator.pushNamed(context, 'verify');
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>MyVerify()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MyVerify()));
                         },
                         codeAutoRetrievalTimeout: (String verificationId) {},
                       );
                       //Navigator.pushNamed(context, 'verify');
                     },
-                    child: const Text("Send the code")),
-              )
+                    child: const Text("Send Verification code")),
+              ),
+              // Row(
+              //   mainAxisSize: MainAxisSize.min,
+              //   children: [
+              //     Text(
+              //     "Already have an account?",
+              //     style: TextStyle(color: Colors.black),
+              //     ),
+              //     TextButton(
+              //         onPressed: () {
+              //           // Navigator.pushNamedAndRemoveUntil(
+              //           //   context,
+              //           //   'phone',
+              //           //       (route) => false,
+              //           // );
+              //           Navigator.push(context, MaterialPageRoute(builder: (context)=> SigninPage()));
+              //         },
+              //         child: const Text(
+              //           "Sign in",
+              //           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              //         ))
+              //   ],
+              // )
             ],
           ),
         ),

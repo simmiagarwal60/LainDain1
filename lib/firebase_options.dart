@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '718561497000',
     projectId: 'laindain-d9734',
     authDomain: 'laindain-d9734.firebaseapp.com',
+    databaseURL: 'https://laindain-d9734-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'laindain-d9734.appspot.com',
     measurementId: 'G-BTQD7YPDF2',
   );
@@ -58,6 +59,7 @@ class DefaultFirebaseOptions {
     appId: '1:718561497000:android:27e26b93608be984c0579d',
     messagingSenderId: '718561497000',
     projectId: 'laindain-d9734',
+    databaseURL: 'https://laindain-d9734-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'laindain-d9734.appspot.com',
   );
 
@@ -66,8 +68,9 @@ class DefaultFirebaseOptions {
     appId: '1:718561497000:ios:ae5c6f70c95bd200c0579d',
     messagingSenderId: '718561497000',
     projectId: 'laindain-d9734',
+    databaseURL: 'https://laindain-d9734-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'laindain-d9734.appspot.com',
-    androidClientId: '718561497000-nbcfu6h76t5in9d6nul4tgoh20k1o1cj.apps.googleusercontent.com',
+    androidClientId: '718561497000-citnnanfnej2ltl7rjajbpv4a2rpd8q2.apps.googleusercontent.com',
     iosClientId: '718561497000-278kuq84qu89apcphafgn9bflfb0r3ot.apps.googleusercontent.com',
     iosBundleId: 'com.example.lainDain',
   );
@@ -77,8 +80,9 @@ class DefaultFirebaseOptions {
     appId: '1:718561497000:ios:ae5c6f70c95bd200c0579d',
     messagingSenderId: '718561497000',
     projectId: 'laindain-d9734',
+    databaseURL: 'https://laindain-d9734-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'laindain-d9734.appspot.com',
-    androidClientId: '718561497000-nbcfu6h76t5in9d6nul4tgoh20k1o1cj.apps.googleusercontent.com',
+    androidClientId: '718561497000-citnnanfnej2ltl7rjajbpv4a2rpd8q2.apps.googleusercontent.com',
     iosClientId: '718561497000-278kuq84qu89apcphafgn9bflfb0r3ot.apps.googleusercontent.com',
     iosBundleId: 'com.example.lainDain',
   );

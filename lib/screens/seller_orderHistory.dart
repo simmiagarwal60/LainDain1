@@ -21,7 +21,11 @@ class _SellerOrderHistoryState extends State<SellerOrderHistory> {
   }
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> loadOrders() {
-    return FirebaseFirestore.instance.collection('userOrders').doc(FirebaseAuth.instance.currentUser!.uid).collection('order').snapshots();
+    return FirebaseFirestore.instance
+        .collection('userOrders')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('order')
+        .snapshots();
   }
 
   @override
@@ -42,7 +46,7 @@ class _SellerOrderHistoryState extends State<SellerOrderHistory> {
             return Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.data ==  null ) {
+          if (snapshot.data == null) {
             return Center(child: Text('No orders found.'));
           }
 
@@ -62,40 +66,65 @@ class _SellerOrderHistoryState extends State<SellerOrderHistory> {
                     side: BorderSide(color: Colors.green, width: 2.3),
                   ),
                   shape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.green, width: 2.3) ),
-                  title: Text(order.customerMobileNumber, style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400),),
+                      side: BorderSide(color: Colors.green, width: 2.3)),
+                  title: Text(
+                    order.customerMobileNumber,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400),
+                  ),
                   children: <Widget>[
                     ListTile(
                       title: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(order.orderId, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
-                          Text('Order status: ${order.status}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
+                          Text(
+                            'Order Id: ${order.orderId}',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                          RichText(
+                            text: TextSpan(
+                              text: 'Order status: ',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
+                              children: <TextSpan>[
+                                order.status == "Accepted"
+                                    ? TextSpan(
+                                        text: order.status,
+                                        style: TextStyle(color: Colors.green,fontSize: 16, fontWeight: FontWeight.w500))
+                                    : order.status == "Rejected"
+                                        ? TextSpan(
+                                            text: order.status,
+                                            style: TextStyle(color: Colors.red,fontSize: 16, fontWeight: FontWeight.w500))
+                                        : TextSpan(text: order.status, style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500)),
+                              ],
+                            ),
+                          ),
                           const SizedBox(
                             height: 12,
                           ),
-                          order.status == "Cancelled" || order.status == "Pending"
-                          ? ButtonWidget(text: "Cancel Order",
-                              onClicked: (){
-                            AuthService.instance.updateOrderModel(order, "Cancelled");
-                            order.status = "Cancelled";
-                            setState(() {
-
-                            });
-                              })
+                          order.status == "Pending"
+                              ? ButtonWidget(
+                                  text: "Cancel Order",
+                                  onClicked: () {
+                                    AuthService.instance
+                                        .updateOrderModel(order, "Cancelled");
+                                    order.status = "Cancelled";
+                                    setState(() {});
+                                  })
                               : SizedBox.fromSize(),
-                          order.status == "Accepted"
-                          ? ButtonWidget(text: "Accept order",
-                              onClicked: (){
-                                AuthService.instance.updateOrderModel(order, "Accepted");
-                                order.status = "Accepted";
-                                setState(() {});
-                              })
-                              : SizedBox.fromSize(),
+                          // order.status == "Accepted"
+                          // ? ButtonWidget(text: "Accept order",
+                          //     onClicked: (){
+                          //       AuthService.instance.updateOrderModel(order, "Accepted");
+                          //       order.status = "Accepted";
+                          //       setState(() {});
+                          //     })
+                          //     : SizedBox.fromSize(),
                         ],
                       ),
                     )
@@ -108,5 +137,4 @@ class _SellerOrderHistoryState extends State<SellerOrderHistory> {
       ),
     );
   }
-
 }

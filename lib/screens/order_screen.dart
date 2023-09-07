@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:lain_dain/models/category_model.dart';
 import 'package:lain_dain/models/orders_model.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
@@ -9,15 +12,16 @@ import 'package:lain_dain/services/notification_services.dart';
 import 'package:lain_dain/widget/button_widget.dart';
 import 'package:lain_dain/screens/order_details.dart';
 import 'package:lain_dain/models/notification_model.dart' as notify;
-
-import '../services/notification_services.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
+import 'package:http/http.dart' as http;
 
 class OrderScreeen extends StatefulWidget {
   final String businessName;
-  final String pickupAddress;
+  //final String pickupAddress;
 
   const OrderScreeen(
-      {Key? key, required this.businessName, required this.pickupAddress})
+      {Key? key, required this.businessName})
       : super(key: key);
 
   @override
@@ -27,12 +31,16 @@ class OrderScreeen extends StatefulWidget {
 }
 
 class OrderScreenState extends State<OrderScreeen> {
+  String userName = 'simran07agarwal@gmail.com';
+  String password = 'Simran@2300';
+  String adminEmail = 'samairasharmaa20@gmail.com';
   String _orderValue = '';
   String _orderWeightage = "";
   String _mobileNumber = "";
   String _pkupAddr = "";
   String _delAddr = "";
   String defaultvalue = '';
+  String countryCode = '+91';
 
   String? screenshotUrl;
   String? orderid;
@@ -40,22 +48,46 @@ class OrderScreenState extends State<OrderScreeen> {
   TextEditingController pickupAddressController = TextEditingController();
   List<CategoryModel> _categoriesList = [];
 
-  List list = [
-    {"title": "FASHION", "value": "FASHION"},
-    {"title": "CLOTHES", "value": "CLOTHES"},
-    {"title": "MOBILE PHONES", "value": "MOBILE PHONES"},
-    {"title": "WATCHES", "value": "WATCHES"},
-    {"title": "LAPTOPS", "value": "LAPTOPS"}
-  ];
+  // List list = [
+  //   {"title": "FASHION", "value": "FASHION"},
+  //   {"title": "CLOTHES", "value": "CLOTHES"},
+  //   {"title": "MOBILE PHONES", "value": "MOBILE PHONES"},
+  //   {"title": "WATCHES", "value": "WATCHES"},
+  //   {"title": "LAPTOPS", "value": "LAPTOPS"}
+  // ];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  // GlobalKey _imageKey = GlobalKey();
-  // final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
   final AuthService authService = AuthService();
   final NotificationServices notificationServices = NotificationServices();
+
+  Future sendEmail(String category, String amount, String weightage,
+      String pkupAddress, String dlvryAddress, String mobileNumber) async {
+    final String serviceId = 'service_9jkbopj';
+    final String templateId = 'template_jahjsq5';
+    final String userId = 'UfmxQymLjIgb2Vjv2';
+
+    final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+    final response = await http.post(url,
+        headers: {
+          'origin': 'http://localhost',
+          'Content-Type': 'application/json'
+        },
+        body: json.encode({
+          'service_id': serviceId,
+          'template_id': templateId,
+          'user_id': userId,
+          'template_params': {
+            'user_name': 'Lain Dain',
+            'user_email': userName,
+            'user_subject': 'New Order Created',
+            'user_message':
+                'A new order has been created\nCategory: ${category}\nAmount: ${amount}\nWightage: ${weightage}\nPickup Address: ${pkupAddress}\nDelivery Address: ${dlvryAddress}\nMobile Number: ${mobileNumber}'
+          }
+        }));
+    print(response.body);
+  }
 
   void getCategoryList() async {
     _categoriesList = await AuthService().getCategories();
@@ -66,8 +98,16 @@ class OrderScreenState extends State<OrderScreeen> {
     // TODO: implement initState
     super.initState();
     getCategoryList();
-    pickupAddressController.text = widget.pickupAddress;
+    //pickupAddressController.text = widget.pickupAddress;
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    pickupAddressController.clear();
+  }
+
 
   void storeNotification(notify.Notification notification) async {
     CollectionReference notificationsRef =
@@ -76,10 +116,9 @@ class OrderScreenState extends State<OrderScreeen> {
   }
 
   void _createOrder() async {
-
     orderid = FirebaseAuth.instance.currentUser!.uid;
 
-    if (_orderValue == 0 ||
+    if (_orderValue.isEmpty ||
         defaultvalue.isEmpty ||
         _orderWeightage.isEmpty ||
         _mobileNumber.isEmpty ||
@@ -105,42 +144,17 @@ class OrderScreenState extends State<OrderScreeen> {
 
     // Save order details and image to Firestore
     try {
-
-      // FirebaseFirestore.instance
-      //     .collection('orders')
-      //     .doc(orderid)
-      //     .set(order.toJson());
       AuthService.instance.saveOrderDetailsToFirestore(
           "Pending",
           widget.businessName,
           defaultvalue,
           _orderValue,
           _orderWeightage,
-          _mobileNumber,
+          '$countryCode$_mobileNumber',
           _pkupAddr,
           _delAddr);
+      //sendEmail(defaultvalue, _orderValue, _orderWeightage, _pkupAddr, _delAddr, _mobileNumber);
 
-
-      // Retrieve the FCM token associated with the buyer's mobile number
-      String? buyerFCMToken = await authService.getBuyerFCMToken(_mobileNumber);
-
-      // notify.Notification notification = notify.Notification(
-      //   id: orderid!,
-      //   title: widget.businessName,
-      //   amount: _orderValue,
-      //   message:
-      //       'Category: $defaultvalue\nOrder Weightage: $_orderWeightage\n Customer mobile number: $_mobileNumber\n delivery address: $_delAddr\n Pickup address: $_pkupAddr',
-      //   isAccepted: false,
-      // );
-      // notificationServices.storeNotification(notification);
-      //
-      // if (buyerFCMToken != null) {
-      //   // Send notification to the buyer
-      //   String orderDetails =
-      //       'Business Name: ${widget.businessName}\nOrder Value: ${_orderValue.toString()}\nCategory: $defaultvalue\nOrder Weightage: $_orderWeightage';
-      //   await notificationServices.sendOrderNotification(
-      //       buyerFCMToken, orderDetails);
-      // }
 
       showDialog(
         context: context,
@@ -300,7 +314,7 @@ class OrderScreenState extends State<OrderScreeen> {
         icon: Icon(Icons.phone),
         iconColor: Color.fromARGB(255, 67, 160, 71),
       ),
-      maxLength: 10,
+      //maxLength: 10,
       keyboardType: TextInputType.phone,
       validator: (value) {
         if (value!.isEmpty) {
@@ -379,7 +393,7 @@ class OrderScreenState extends State<OrderScreeen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("LainDain"),
+        title: const Text("Create New Order"),
         backgroundColor: const Color.fromARGB(255, 67, 160, 71),
       ),
       body: SingleChildScrollView(
@@ -396,9 +410,6 @@ class OrderScreenState extends State<OrderScreeen> {
                 _buildMobileNumber(),
                 _buildPkupAddr(),
                 _buildDelAddr(),
-
-                // SizedBox(height: 16.0),
-                // ButtonWidget(text: 'Select Order Image', onClicked: _selectOrderImage),
                 const SizedBox(height: 100),
                 ButtonWidget(
                     text: 'PROCEED TO CHECKOUT',
@@ -408,9 +419,13 @@ class OrderScreenState extends State<OrderScreeen> {
                       }
 
                       _formKey.currentState!.save();
+                      _formKey.currentState!.reset();
 
                       _createOrder();
-                      notificationServices.sendNotificationToBuyer(_mobileNumber, 'amount: ${_orderValue}, weightage: ${_orderWeightage}', widget.businessName);
+                      notificationServices.sendNotificationToBuyer(
+                        '$countryCode$_mobileNumber',
+                          'amount: ${_orderValue}, weightage: ${_orderWeightage}',
+                          widget.businessName);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -420,15 +435,10 @@ class OrderScreenState extends State<OrderScreeen> {
                                     pkupAddr: _pkupAddr,
                                     delAddr: _delAddr,
                                     category: defaultvalue,
-                                    mobileNumber: _mobileNumber,
+                                    mobileNumber: '$countryCode$_mobileNumber',
                                     docid: orderid,
+                                businessName: widget.businessName,
                                   )));
-                      // print(_orderValue);
-                      // print(_orderWeightage);
-                      // print(_mobileNumber);
-                      // print(_pkupAddr);
-                      // print(_delAddr);
-                      //Send to API
                     })
               ],
             ),

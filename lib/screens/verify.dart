@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lain_dain/screens/home.dart';
 import 'package:lain_dain/screens/phone.dart';
+import 'package:lain_dain/screens/seller_main.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
 import 'package:pinput/pinput.dart';
+
+import 'buyer_main_screen.dart';
 
 class MyVerify extends StatefulWidget {
   const MyVerify({Key? key}) : super(key: key);
@@ -14,6 +18,15 @@ class MyVerify extends StatefulWidget {
 
 class _MyVerifyState extends State<MyVerify> {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final ValueNotifier<bool> dataLoadedNotifier = ValueNotifier<bool>(false);
+
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> fetchUserDataStream(
+      String phoneNumber) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(phoneNumber)
+        .snapshots();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +88,15 @@ class _MyVerifyState extends State<MyVerify> {
               // ),
               const Text(
                 "LainDain",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 10,
               ),
-              const Text(
-                "We need to register your phone number before getting started!",
+              Text(
+                "Please enter the verification code we've sent you",
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 20,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -119,12 +132,69 @@ class _MyVerifyState extends State<MyVerify> {
                                 verificationId: MyPhone.verify, smsCode: code);
 
                         // Sign the user in (or link) with the credential
-                        UserCredential userCredential = await auth.signInWithCredential(credential);
-                        await AuthService().saveUserDetailsToFirestore(userCredential.user!.phoneNumber!, userCredential.user!.uid);
+                        UserCredential userCredential =
+                            await auth.signInWithCredential(credential);
+                        //if (!context.mounted) return;
+                          Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => StreamBuilder<
+                                      DocumentSnapshot<Map<String, dynamic>>>(
+                                      stream: fetchUserDataStream(
+                                          userCredential.user!.phoneNumber!),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return const Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        }
+
+                                        if((snapshot.hasData || snapshot.data!.exists) && !dataLoadedNotifier.value){
+                                          final data = snapshot.data?.data() ;
+                                          String userRole = data?['userRole'] ?? '' ;
+                                          if (userRole == 'Seller') {
+                                            return SellerMainScreen(
+                                                businessName:
+                                                data?['businessName'] ?? '');
+                                          } else if (userRole == 'Buyer') {
+                                            return const BuyerMainScreen();
+                                          }
+                                        }
+                                        // else{
+                                        //   print('hello');
+                                        //   AuthService().saveUserDetailsToFirestore(
+                                        //       userCredential.user!.phoneNumber!,
+                                        //       userCredential.user!.uid);
+                                        //   return const MyApp();
+                                        // }
+                                        if (!dataLoadedNotifier.value){
+                                          // Save user details to Firestore only once
+                                          AuthService().saveUserDetailsToFirestore(
+                                              userCredential.user!.phoneNumber!,
+                                              userCredential.user!.uid);
+                                          dataLoadedNotifier.value = true;
+                                        }
+                                        print('hey');
+
+                                        return const MyApp();
+
+
+                                      },
+
+                                  ),
+                              ));
+                        // else {
+                        //   await AuthService().saveUserDetailsToFirestore(
+                        //       userCredential.user!.phoneNumber!,
+                        //       userCredential.user!.uid);
+                        //   Navigator.push(context,
+                        //       MaterialPageRoute(builder: (context) => MyApp()));
+                        // }
+                        //await AuthService().saveUserDetailsToFirestore(userCredential.user!.phoneNumber!, userCredential.user!.uid);
                         // Navigator.pushNamedAndRemoveUntil(
                         //     context, "home", (route) => false);
 
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
+                        //Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));
                       } catch (e) {
                         print("Wrong otp");
                       }
@@ -135,11 +205,13 @@ class _MyVerifyState extends State<MyVerify> {
                 children: [
                   TextButton(
                       onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          'phone',
-                          (route) => false,
-                        );
+                        // Navigator.pushNamedAndRemoveUntil(
+                        //   context,
+                        //   'phone',
+                        //   (route) => false,
+                        // );
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => MyPhone()));
                       },
                       child: const Text(
                         "Edit Phone Number ?",
