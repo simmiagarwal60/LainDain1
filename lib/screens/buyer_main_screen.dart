@@ -1,8 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lain_dain/screens/buyer_orderScreen.dart';
+import 'package:lain_dain/screens/buyer_landing_page.dart';
 import 'package:lain_dain/screens/buyer_orders.dart';
 import 'package:lain_dain/screens/profile.dart';
-import 'package:lain_dain/screens/profile_screen.dart';
 
 class BuyerMainScreen extends StatefulWidget {
   const BuyerMainScreen({super.key});
@@ -13,12 +13,12 @@ class BuyerMainScreen extends StatefulWidget {
 
 class _BuyerMainScreenState extends State<BuyerMainScreen> {
   int myIndex = 0;
-  List tabs = [BuyerOrder(), Profile()];
+  List tabs = [BuyerLandingPage(), BuyerOrder(), Profile()];
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()async{
+      onWillPop: () async {
         return false;
       },
       child: Scaffold(
@@ -34,16 +34,23 @@ class _BuyerMainScreenState extends State<BuyerMainScreen> {
           items: [
             BottomNavigationBarItem(
                 icon: Icon(
+                  Icons.home,
+                  color: Colors.white,
+                ),
+                label: 'Home'),
+            BottomNavigationBarItem(
+                icon: Icon(
                   Icons.dashboard,
                   color: Colors.white,
                 ),
                 label: 'Orders'),
             BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                ),
-                label: 'Profile', ),
+              icon: Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
+              label: 'Profile',
+            ),
           ],
         ),
         body: tabs[myIndex],

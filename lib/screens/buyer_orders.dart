@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lain_dain/widget/accepted_order.dart';
-import 'package:lain_dain/widget/pending_orders.dart';
 import 'package:lain_dain/widget/pending_orders_razorpay.dart';
 import 'package:lain_dain/widget/rejected_orders.dart';
 

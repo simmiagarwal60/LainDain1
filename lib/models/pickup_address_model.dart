@@ -1,4 +1,3 @@
-
 class PickupAddress {
   late String id;
   late String fullName;

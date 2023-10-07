@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lain_dain/screens/payment_page.dart';
-import 'package:lain_dain/widget/my_order_card.dart';
 import 'package:lain_dain/models/notification_model.dart' as notify;
 
 class NotificationScreen extends StatefulWidget {

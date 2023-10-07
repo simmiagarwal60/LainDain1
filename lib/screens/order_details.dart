@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lain_dain/screens/order_screen.dart';
 import 'package:lain_dain/screens/seller_main.dart';
-import 'package:lain_dain/screens/seller_orderHistory.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -153,6 +151,7 @@ class _OrderDetailsState extends State<OrderDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
         body: Column(
           children: [
             RepaintBoundary(
@@ -209,62 +208,68 @@ class _OrderDetailsState extends State<OrderDetails> {
                 SizedBox(height: 20,),
                 Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Customer mobile number', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
-                          Text('${widget.mobileNumber}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
-                        ],
-                      ),
-                      SizedBox(height: 10,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Delivery Address', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
-                          Text('${widget.delAddr}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
-                        ],
-                      ),
-                      SizedBox(height: 10,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Pickup Address', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
-                          Text('${widget.pkupAddr}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
-                        ],
-                      ),
-                      SizedBox(height: 10,),
-                      Divider(color: Colors.grey,),
-                      SizedBox(height: 10,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Order Category', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
-                          Text('${widget.category}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
-                        ],
-                      ),
-                      SizedBox(height: 10,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Order Weightage', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
-                          Text('${widget.orderWeightage}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
-                        ],
-                      ),
-                      SizedBox(height: 10,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Total Amount', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
-                          Text('${widget.orderValue}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
-                        ],
-                      ),
-                      SizedBox(height: 10,),
-                      Divider(color: Colors.grey,),
-                    ],
+                  child: Container(
+                    color: Colors.white,
+                    // decoration: BoxDecoration(
+                    //   backgroundBlendMode:
+                    // ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Customer mobile number', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
+                            Text('${widget.mobileNumber}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Delivery Address', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
+                            Text('${widget.delAddr}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Pickup Address', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
+                            Text('${widget.pkupAddr}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        Divider(color: Colors.grey,),
+                        SizedBox(height: 10,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Order Category', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
+                            Text('${widget.category}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Order Weightage', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
+                            Text('${widget.orderWeightage}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Total Amount', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
+                            Text('${widget.orderValue}',  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        Divider(color: Colors.grey,),
+                      ],
+                    ),
                   ),
                 ),
 

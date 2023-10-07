@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lain_dain/screens/buyer_main_screen.dart';
-import 'package:lain_dain/screens/seller_main.dart';
-import 'package:lain_dain/screens/sign_in.dart';
+import 'package:lain_dain/services/firebase_auth.dart';
 import 'package:lain_dain/services/notification_services.dart';
 import 'package:lain_dain/screens/verify.dart';
 
@@ -33,6 +31,10 @@ class _MyPhoneState extends State<MyPhone> {
       print("device token:");
       print(value);
     });
+    if(FirebaseAuth.instance.currentUser != null){
+      AuthService.instance.handleAuth();
+    }
+
   }
 
   void showSnackBar(BuildContext context, String message) {
