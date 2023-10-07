@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,15 +6,16 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lain_dain/models/category_model.dart';
 import 'package:lain_dain/screens/buyer-form.dart';
-import 'package:lain_dain/screens/buyer_main_screen.dart';
+import 'package:lain_dain/screens/buyer_landing_page.dart';
 import 'package:lain_dain/screens/phone.dart';
 import 'package:lain_dain/screens/seller-form.dart';
-import 'package:lain_dain/screens/seller_main.dart';
-
+import 'package:lain_dain/screens/seller_landing_page.dart';
 import '../models/orders_model.dart';
 import '../models/pickup_address_model.dart';
 import '../models/userOrders.dart';
 import '../models/users.dart';
+import '../screens/buyer_main_screen.dart';
+import '../screens/seller_main.dart';
 
 class AuthService {
   static AuthService instance = AuthService();
@@ -239,89 +239,136 @@ class AuthService {
 
   Future<List<Orders>> getPendingOrderList() async {
     try {
-      QuerySnapshot<Map<String, dynamic>> sellersSnapshot =
-          await _firestore.collection('userOrders').get();
+      var sellersSnapshot =
+      await _firestore.collection('users').where('userRole', isEqualTo: 'Seller').get();
+      print(sellersSnapshot.docs.length);
       List<Orders> pendingOrdersData = [];
 
-
-      List<Future<QuerySnapshot<Map<String, dynamic>>>> futures = sellersSnapshot.docs.map((sellerDoc) {
-        String sellerId = sellerDoc.id;
-        print('Fetching pending orders for seller: $sellerId');
-
-        return _firestore
+      for (var sellerDoc in sellersSnapshot.docs) {
+        String sellerId = sellerDoc['userId'];
+        print(sellerId);
+        QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _firestore
             .collection('userOrders')
             .doc(sellerId)
             .collection('order')
             .where('status', isEqualTo: 'Pending')
+            .where('customerMobileNumber', isEqualTo: FirebaseAuth.instance.currentUser!.phoneNumber)
             .get();
-      }).toList();
-      List<QuerySnapshot<Map<String, dynamic>>> ordersSnapshots = await Future.wait(futures);
 
-      for (var ordersSnapshot in ordersSnapshots) {
         List<Orders> sellerPendingOrders = ordersSnapshot.docs
             .map((doc) => Orders.fromJson(doc.data()))
             .toList();
+
         pendingOrdersData.addAll(sellerPendingOrders);
       }
+
+      print('Pending Orders Data: $pendingOrdersData');
       return pendingOrdersData;
-    } catch (e) {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
-          .collection('userOrders')
-          .doc('M0SMDZB6F3XYPuJ4RME6Cu0gi3W2')
-          .collection('order')
-          .where('status', isEqualTo: 'Pending')
-          .get();
-      print("Error retrieving pending orders: $e");
-      return querySnapshot.docs.map((e) => Orders.fromJson(e.data())).toList();
+    } catch (error) {
+      print('Error fetching pending orders: $error');
+      return []; // Return an empty list in case of an error
     }
+
   }
 
   Future<List<Orders>> getAcceptedOrderList() async {
-    QuerySnapshot<Map<String, dynamic>> sellersSnapshot =
-        await _firestore.collection('userOrders').get();
-    List<Orders> acceptedOrdersData = [];
-    for (DocumentSnapshot sellerDoc in sellersSnapshot.docs) {
-      String sellerId = sellerDoc.id;
-      print('mobileNumber: ');
-      print(_firebaseAuth.currentUser!.phoneNumber);
-      print('Fetching pending orders for seller: $sellerId');
+    try {
+      var sellersSnapshot =
+      await _firestore.collection('users').where('userRole', isEqualTo: 'Seller').get();
+      print(sellersSnapshot.docs.length);
+      List<Orders> pendingOrdersData = [];
 
-      QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _firestore
-          .collection('userOrders')
-          .doc(sellerId)
-          .collection('order')
-          //.where('customerMobileNumber', isEqualTo: _firebaseAuth.currentUser!.phoneNumber)
-          .where('status', isEqualTo: 'Accepted')
-          .get();
+      for (var sellerDoc in sellersSnapshot.docs) {
+        String sellerId = sellerDoc['userId'];
+        print(sellerId);
+        QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _firestore
+            .collection('userOrders')
+            .doc(sellerId)
+            .collection('order')
+            .where('status', isEqualTo: 'Accepted')
+            .where('customerMobileNumber', isEqualTo: FirebaseAuth.instance.currentUser!.phoneNumber)
+            .get();
 
-      print(
-          'Number of pending orders for seller $sellerId: ${ordersSnapshot.size}');
+        List<Orders> sellerPendingOrders = ordersSnapshot.docs
+            .map((doc) => Orders.fromJson(doc.data()))
+            .toList();
 
-      acceptedOrdersData = ordersSnapshot.docs
-          .map((doc) => Orders.fromJson(doc.data()))
-          .toList();
-      //return ordersSnapshot.docs.map((doc) => Orders.fromJson(doc.data())).toList();
+        pendingOrdersData.addAll(sellerPendingOrders);
+      }
+
+      print('Pending Orders Data: $pendingOrdersData');
+      return pendingOrdersData;
+    } catch (error) {
+      print('Error fetching pending orders: $error');
+      return []; // Return an empty list in case of an error
     }
-    return acceptedOrdersData;
+
   }
 
   Future<List<Orders>> getRejectedOrderList() async {
-    QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
-        .collection('userOrders')
-        .doc('M0SMDZB6F3XYPuJ4RME6Cu0gi3W2')
-        .collection('order')
-        .where('status', isEqualTo: 'Pending')
-        .get();
-    return querySnapshot.docs.map((e) => Orders.fromJson(e.data())).toList();
+    try {
+      var sellersSnapshot =
+      await _firestore.collection('users').where('userRole', isEqualTo: 'Seller').get();
+      print(sellersSnapshot.docs.length);
+      List<Orders> pendingOrdersData = [];
+
+      for (var sellerDoc in sellersSnapshot.docs) {
+        String sellerId = sellerDoc['userId'];
+        print(sellerId);
+        QuerySnapshot<Map<String, dynamic>> ordersSnapshot = await _firestore
+            .collection('userOrders')
+            .doc(sellerId)
+            .collection('order')
+            .where('status', isEqualTo: 'Rejected')
+            .where('customerMobileNumber', isEqualTo: FirebaseAuth.instance.currentUser!.phoneNumber)
+            .get();
+
+        List<Orders> sellerPendingOrders = ordersSnapshot.docs
+            .map((doc) => Orders.fromJson(doc.data()))
+            .toList();
+
+        pendingOrdersData.addAll(sellerPendingOrders);
+      }
+
+      print('Pending Orders Data: $pendingOrdersData');
+      return pendingOrdersData;
+    } catch (error) {
+      print('Error fetching pending orders: $error');
+      return []; // Return an empty list in case of an error
+    }
   }
 
   Future<void> updateOrderModel(Orders orderModel, String status) async {
-    await _firestore
-        .collection('userOrders')
-        .doc(_firebaseAuth.currentUser!.uid)
-        .collection('order')
-        .doc(orderModel.orderId)
-        .update({'status': status});
+    try {
+      var sellersSnapshot =
+      await _firestore.collection('users').where('userRole', isEqualTo: 'Seller').get();
+
+      for (var sellerDoc in sellersSnapshot.docs) {
+        String sellerId = sellerDoc['userId'];
+        print(sellerId);
+        
+        print('Hi..');
+        // var snapshot = await _firestore.collection('userOrders').doc(sellerId).collection('order').where('orderId', isEqualTo: orderModel.orderId).get();
+        // await _firestore.collection('userOrders').doc(sellerId).collection('order').doc(orderModel.orderId).update({
+        //   'status': status,
+        // });
+
+              await _firestore.collection('userOrders').doc(sellerId).collection('order').get().then((snapshot) {
+            snapshot.docs.forEach((documentsnapshot) async {
+              await _firestore.collection('userOrders').doc(sellerId).collection('order').doc(orderModel.orderId).update(
+                  {
+                    'status': status,
+                  }
+              );
+            });
+          });
+
+      }
+
+
+    } catch (error) {
+      print('Error fetching pending orders: $error');
+    }
   }
 
   Future<String> getFCMToken() async {

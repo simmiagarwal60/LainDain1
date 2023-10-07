@@ -6,7 +6,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:lain_dain/screens/notification_screen.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
 import 'package:lain_dain/widget/pending_orders.dart';
 import '../models/notification_model.dart' as notify;

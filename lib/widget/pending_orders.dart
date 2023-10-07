@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lain_dain/screens/payment_page.dart';
 import 'package:payu_checkoutpro_flutter/payu_checkoutpro_flutter.dart';
 import 'package:lain_dain/services/HashService.dart';
 import 'package:payu_checkoutpro_flutter/PayUConstantKeys.dart';
@@ -103,6 +102,7 @@ class _PendingOrdersState extends State<PendingOrders> implements PayUCheckoutPr
           //     .map((e) => Orders.fromJson(
           //     e.data() as Map<String, dynamic>))
           //     .toList() ?? [];
+
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
@@ -156,32 +156,41 @@ class _PendingOrdersState extends State<PendingOrders> implements PayUCheckoutPr
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
+                                contentPadding: EdgeInsets.zero,
                                 title: Text('Order Summary'),
-                                content: Column(
-                                  children: [
-                                    Text(
-                                      'Order ID: ${order.orderId}',
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black,
-                                          fontSize: 20),
+                                content: Container(
+                                  height: 400,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Order ID: ${order.orderId}',
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                              fontSize: 20),
+                                        ),
+                                        SizedBox(height: 16),
+                                        Text('Business Name: ${order.businessName}',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black,
+                                                fontSize: 20)),
+                                        SizedBox(height: 16),
+                                        Text('Amount: ${order.orderValue}',
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.black,
+                                                fontSize: 20)),
+                                      ],
                                     ),
-                                    SizedBox(height: 16),
-                                    Text('Business Name: ${order.businessName}',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black,
-                                            fontSize: 20)),
-                                    SizedBox(height: 16),
-                                    Text('Amount: ${order.orderValue}',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.black,
-                                            fontSize: 20)),
-                                  ],
+                                  ),
                                 ),
                                 actions: [
                                   TextButton(

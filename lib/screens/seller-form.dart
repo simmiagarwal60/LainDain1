@@ -9,11 +9,11 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lain_dain/screens/delivery_details.dart';
 import 'package:lain_dain/models/pickup_address_model.dart';
+import 'package:lain_dain/screens/seller_landing_page.dart';
 import 'package:lain_dain/screens/seller_main.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
 import 'package:lain_dain/widget/button_widget.dart';
 import '../models/aadhaar_data.dart';
-import 'order_screen.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:http/http.dart' as http;
 
@@ -68,7 +68,7 @@ class FormScreenState extends State<FormScreen> {
     // TODO: implement initState
     super.initState();
     widget.selectedAddress == null? pkupAddressController = TextEditingController(text: ""):pkupAddressController = TextEditingController(
-      text:
+      text: widget.selectedAddress!.houseNumber == ''? '':
           '${widget.selectedAddress!.houseNumber}, ${widget.selectedAddress!.city}, ${widget.selectedAddress!.pincode},${widget.selectedAddress!.state}',
     );
   }
@@ -78,47 +78,7 @@ class FormScreenState extends State<FormScreen> {
         _lastName!, _businessName, pkupAddressController.text);
   }
 
-  void determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled');
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error("Location permissions are denied!");
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          "Location permissions are permanently denied!, we cannot request permission");
-    }
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
-
-    Placemark placemark = placemarks[0];
-    String currentAddress =
-        '${placemark.street}, ${placemark.subLocality}, ${placemark.locality},${placemark.postalCode}, ${placemark.administrativeArea}, ${placemark.country}';
-
-    DocumentReference orderDocument = FirebaseFirestore.instance
-        .collection('sellerAddresses')
-        .doc(FirebaseAuth.instance.currentUser!.uid).collection('address').doc();
-    String docId = orderDocument.id;
-    final address = PickupAddress(id: docId,fullName: _firstName!, city: '${placemark.locality}', state: '${placemark.administrativeArea}', pincode: '${placemark.postalCode}', houseNumber: '${placemark.street}');
-
-    FirebaseFirestore.instance
-        .collection('sellerAddresses')
-        .doc(FirebaseAuth.instance.currentUser!.uid).collection('address').doc(docId).set(address.toJson());
-
-    pkupAddressController.text = currentAddress;
-  }
 
   Widget _buildAadhaar() {
     return TextFormField(
@@ -543,71 +503,15 @@ class FormScreenState extends State<FormScreen> {
     );
   }
 
-  Widget _savedAddresses() {
-    return Row(
-      //mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        const Icon(
-          Icons.location_on,
-          color: Color.fromARGB(255, 67, 160, 71),
-          size: 20,
-        ),
-        const SizedBox(
-          width: 3,
-        ),
-        InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DeliveryDetails(
-                          savedAddress: PickupAddress(
-                              id: '',
-                              fullName: '',
-                              pincode: '',
-                              houseNumber: '',
-                              city: '',
-                              state: ''))));
-            },
-            child: const Text(
-              "Saved Addresses",
-              style: TextStyle(
-                  fontWeight: FontWeight.normal, color: Colors.black54),
-            ))
-      ],
-    );
-  }
 
-  Widget _useMyLocation() {
-    return Row(
-      //mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        const Icon(
-          Icons.my_location,
-          color: Color.fromARGB(255, 67, 160, 71),
-          size: 20,
-        ),
-        const SizedBox(
-          width: 3,
-        ),
-        InkWell(
-            onTap: () {
-              determinePosition();
-            },
-            child: const Text(
-              "Use my location",
-              style: TextStyle(
-                  fontWeight: FontWeight.normal, color: Colors.black54),
-            ))
-      ],
-    );
-  }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("LainDain"),
+        title: const Text("Form"),
         backgroundColor: const Color.fromARGB(255, 67, 160, 71),
       ),
       body: SingleChildScrollView(
@@ -633,13 +537,7 @@ class FormScreenState extends State<FormScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _savedAddresses(),
-                    _useMyLocation(),
-                  ],
-                ),
+
                 const SizedBox(height: 100),
                 ButtonWidget(
                     text: 'PROCEED',

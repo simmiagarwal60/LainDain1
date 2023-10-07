@@ -6,7 +6,6 @@ import 'package:lain_dain/screens/phone.dart';
 import 'package:lain_dain/screens/seller_main.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
 import 'package:pinput/pinput.dart';
-
 import 'buyer_main_screen.dart';
 
 class MyVerify extends StatefulWidget {

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lain_dain/screens/buyer_main_screen.dart';
 import 'package:lain_dain/screens/phone.dart';
 import 'package:lain_dain/screens/seller_main.dart';
 import 'package:lain_dain/services/notification_services.dart';

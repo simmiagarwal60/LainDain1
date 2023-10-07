@@ -87,8 +87,7 @@ class _ProfileState extends State<Profile> {
                     AuthService.instance.signOut();
                     //Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Logging out')));
-                    Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (_) => MyPhone()));
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute( builder: (ctx) => MyPhone()), (route) => false);
                   },
                   child: ListTile(
                     title: Text('Log out'),

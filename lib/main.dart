@@ -1,27 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:lain_dain/screens/buyer-form.dart';
-import 'package:lain_dain/screens/add_address_details.dart';
-import 'package:lain_dain/screens/buyer_main_screen.dart';
-import 'package:lain_dain/screens/buyer_orders.dart';
-import 'package:lain_dain/screens/delivery_details.dart';
-import 'package:lain_dain/screens/notification_screen.dart';
 import 'package:lain_dain/screens/order_details.dart';
-import 'package:lain_dain/screens/order_screen.dart';
-import 'package:lain_dain/screens/payment_page.dart';
 import 'package:lain_dain/screens/phone.dart';
-import 'package:lain_dain/screens/profile_screen.dart';
-import 'package:lain_dain/screens/razorpay_page.dart';
 import 'package:lain_dain/screens/seller-form.dart';
 import 'package:lain_dain/screens/seller_main.dart';
-import 'package:lain_dain/screens/seller_orderHistory.dart';
-import 'package:lain_dain/screens/verify.dart';
 import 'package:lain_dain/services/firebase_auth.dart';
-import 'package:lain_dain/services/notification_services.dart';
-
 import 'firebase_options.dart';
 import 'models/pickup_address_model.dart';
 import 'screens/home.dart';
@@ -66,8 +51,10 @@ void main() async {
         home:
       //FormScreen(selectedAddress: PickupAddress(id: '', fullName: '', pincode: '', houseNumber: '', city: '', state: ''))
         //OrderDetails(orderValue: '2', orderWeightage: '2', pkupAddr: 'fsrf', delAddr: 'fs', category: 'fs', mobileNumber: 'dfvs', docid: 'sfa', businessName: 'vgh',)
-      FirebaseAuth.instance.currentUser != null? AuthService.instance.handleAuth(): MyPhone()
-
+        FirebaseAuth.instance.currentUser != null? AuthService.instance.handleAuth(): MyPhone()
+      //LandingPage(businessName: 'dfghgh')
+    //BuyerLandingPage()
+    //SellerMainScreen(businessName: 'dfgghj')
       ));
 
 }

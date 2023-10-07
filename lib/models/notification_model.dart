@@ -1,4 +1,3 @@
-
 class Notification {
    String id;
    String title;

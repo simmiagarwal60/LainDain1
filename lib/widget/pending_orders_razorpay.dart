@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
-
 import '../models/orders_model.dart';
 import '../services/firebase_auth.dart';
 
@@ -133,32 +132,39 @@ class _PendingOrdersRPState extends State<PendingOrdersRP> {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: Text('Order Summary'),
-                                    content: Column(
-                                      children: [
-                                        Text(
-                                          'Order ID: ${order.orderId}',
-                                          textAlign: TextAlign.start,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                              fontSize: 20),
-                                        ),
-                                        SizedBox(height: 16),
-                                        Text('Business Name: ${order.businessName}',
+                                    title: Text('Order Summary', style: TextStyle(fontSize: 22),),
+                                    content: Container(
+                                      height: 120,
+                                      width: 300,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'ID: ${order.orderId}',
                                             textAlign: TextAlign.start,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 color: Colors.black,
-                                                fontSize: 20)),
-                                        SizedBox(height: 16),
-                                        Text('Amount: ${order.orderValue}',
-                                            textAlign: TextAlign.start,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.black,
-                                                fontSize: 20)),
-                                      ],
+                                                fontSize: 18),
+                                          ),
+                                          SizedBox(height: 16),
+                                          Text('Business Name: ${order.businessName}',
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black,
+                                                  fontSize: 18)),
+                                          SizedBox(height: 16),
+                                          Text('Amount: ${order.orderValue}',
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black,
+                                                  fontSize: 18)),
+                                        ],
+                                      ),
                                     ),
                                     actions: [
                                       TextButton(
